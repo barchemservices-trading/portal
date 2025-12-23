@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barchem | Trading & Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Orbitron:wght@400;700;900&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --matrix-green: #00ff41;
+            --gold-primary: #facc15;
+            --gold-dark: #846006;
+            --dark-void: #050505;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            background-color: var(--dark-void);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- MATRIX BACKGROUND --- */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            opacity: 0.25;
+            pointer-events: none;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.9) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* --- UI ELEMENTS --- */
+        .logo-text {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 8vw, 5rem); 
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: clamp(4px, 2vw, 12px);
+            background: linear-gradient(to bottom, #fff, var(--gold-primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        .btn-gold {
+            background: var(--gold-primary);
+            color: #000;
+            font-weight: 900;
+            padding: 12px 30px;
+            font-size: 0.85rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--gold-dark);
+            transition: all 0.2s;
+            z-index: 30;
+            border: none;
+        }
+
+        .btn-gold:active {
+            transform: translateY(3px);
+            box-shadow: 0 0 0 var(--gold-dark);
+        }
+
+        /* --- FLYING LETTERS --- */
+        #animated-content {
+            font-family: 'Lora', serif;
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            line-height: 1.7;
+            text-align: justify;
+            color: var(--matrix-green);
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .word-wrapper {
+            display: inline-block;
+            white-space: nowrap;
+            margin-right: 6px;
+        }
+
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            transform: translate3d(var(--x), var(--y), var(--z)) rotate(var(--r));
+            transition: all 0.7s cubic-bezier(0.1, 0.8, 0.2, 1);
+        }
+
+        .letter.assembled {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) rotate(0);
+        }
+
+        .letter.gold-spark { color: var(--gold-primary); }
+
+        /* --- GALLERY --- */
+        .gallery-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid var(--gold-dark);
+            height: clamp(250px, 60vh, 500px);
+            background: #000;
+        }
+
+        .gallery-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            animation: fadeEffect 1s;
+        }
+
+        .gallery-slide img, .gallery-slide video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        @keyframes fadeEffect { from {opacity: 0.2;} to {opacity: 1;} }
+
+        /* --- FOOTER STYLES --- */
+        .barchem-footer {
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid rgba(250, 204, 21, 0.3);
+            padding: 40px 20px;
+            font-family: 'Orbitron', sans-serif;
+            color: #ccc;
+            margin-top: 50px;
+        }
+
+        .footer-title {
+            color: var(--gold-primary);
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        /* --- PAGE SECTIONS --- */
+        #page-2, #portal-content { display: none; position: relative; z-index: 10; opacity: 0; transition: opacity 1s ease; }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix-canvas"></canvas>
+    <div class="vignette"></div>
+
+    <div id="welcome-ui" class="relative z-10 flex flex-col items-center justify-center h-screen text-center px-6">
+        <h1 class="logo-text">Barchem</h1>
+        <h2 class="text-yellow-500 tracking-[5px] font-bold text-sm md:text-lg mb-8">TRADING AND SERVICES</h2>
+        <button id="access-now-btn" class="btn-gold">Access Now</button>
+    </div>
+
+    <div id="page-2" class="flex flex-col items-center pt-12">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png" alt="Earth" class="w-32 md:w-44 mb-6">
+        <h1 class="logo-text text-3xl md:text-5xl mb-8 px-4">Barchem Trading and Services</h1>
+        
+        <div id="animated-content"></div>
+
+        <div id="committee" class="opacity-0 w-full max-w-4xl px-6 text-center mt-12 transition-opacity duration-[2000ms]">
+            <h3 class="font-['Cinzel'] text-yellow-500 text-2xl mb-8 underline decoration-gold-dark underline-offset-8">WHO WE ARE</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm md:text-base">
+                <div><strong class="text-white text-lg">Ramon M. Gallinera</strong><br><span class="text-yellow-600">Chairman</span></div>
+                <div><strong class="text-white text-lg">Emmanuel R. Barcebal</strong><br><span class="text-yellow-600">Vice Chairman / Executive Director</span></div>
+                <div><strong class="text-white text-lg">Francis J. Guingona</strong><br><span class="text-yellow-600">Member / Consultant</span></div>
+                <div><strong class="text-white text-lg">Marivi A. Beltran CPA</strong><br><span class="text-yellow-600">Finance</span></div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-gray-800">
+                <span class="text-yellow-600 text-xs uppercase tracking-widest">Legal Counsel</span><br>
+                <span class="text-white text-sm">Atty. Marie Cenjidoza | Atty. Jamie Salvatierra</span>
+            </div>
+            
+            <button id="enter-portal-btn" class="btn-gold mt-12 hidden">Enter Portal</button>
+        </div>
+
+        <div id="footer-p2" class="w-full"></div>
+    </div>
+
+    <div id="portal-content" class="pt-10">
+        <div class="flex flex-col items-center mb-10 px-4 text-center">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png" alt="Earth" class="w-20 mb-4">
+            <h1 class="logo-text text-2xl md:text-4xl">Barchem Trading and Services</h1>
+        </div>
+
+        <div class="gallery-container">
+            <div class="gallery-slide"><video autoplay muted loop playsinline><source src="barchem1.mp4" type="video/mp4"></video></div>
+            <div class="gallery-slide"><img src="barchem2.jpg"></div>
+            <div class="gallery-slide"><img src="barchem3.jpg"></div>
+            <div class="gallery-slide"><img src="barchem4.jpg"></div>
+            <div class="gallery-slide"><img src="barchem5.jpg"></div>
+            <div class="gallery-slide"><img src="barchem6.jpg"></div>
+            <div class="gallery-slide"><img src="barchem7.jpg"></div>
+            <div class="gallery-slide"><img src="barchem8.jpg"></div>
+            <div class="gallery-slide"><img src="barchem9.jpg"></div>
+            <div class="gallery-slide"><img src="barchem10.jpg"></div>
+            <div class="gallery-slide"><img src="barchem11.jpg"></div>
+        </div>
+
+        <div class="max-w-5xl mx-auto px-6 font-['Lora'] text-gray-200 leading-relaxed">
+            <div class="my-16">
+                <h2 class="font-['Cinzel'] text-yellow-500 text-3xl border-b-2 border-yellow-900 inline-block mb-6">ABOUT US</h2>
+                <p class="mb-6">Barchem was established in 2002 for trading and general contracting. Since its inception, Barchem has successfully performed all awarded projects in maintenance, disinfection, pest control, construction services, and the distribution of safety devices.</p>
+                <p>Barchem has gained the unwavering trust of its clients, with its name becoming a hallmark of credibility and professionalism.</p>
+            </div>
+
+            <div class="mb-16 p-8 border border-yellow-900/30 bg-black/40 text-center">
+                <h2 class="font-['Cinzel'] text-yellow-500 text-2xl mb-4">MISSION</h2>
+                <p class="text-xl md:text-2xl italic text-white">"Barchem delivers innovative technology that exceeds customers’ needs."</p>
+            </div>
+
+            <div class="mb-16">
+                <h2 class="font-['Cinzel'] text-yellow-500 text-3xl border-b-2 border-yellow-900 inline-block mb-8">CORE VALUES</h2>
+                <div class="space-y-8">
+                    <div class="pl-4 border-l-4 border-yellow-500"><strong>Employees:</strong> The source of our success. We communicate openly, treat each other with respect, and promote teamwork and personal growth.</div>
+                    <div class="pl-4 border-l-4 border-yellow-500"><strong>Customers:</strong> Receive our strongest commitment to quality products and superior service.</div>
+                    <div class="pl-4 border-l-4 border-yellow-500"><strong>Products:</strong> Built on innovative technology and continuous improvement.</div>
+                    <div class="pl-4 border-l-4 border-yellow-500"><strong>Conduct:</strong> A deep concern for human safety and environmental stewardship, embracing the highest ethical standards.</div>
+                </div>
+            </div>
+
+            <div class="mb-16">
+                <h2 class="font-['Cinzel'] text-yellow-500 text-3xl border-b-2 border-yellow-900 inline-block mb-8">SERVICES</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="p-6 bg-white/5 border border-white/10">
+                        <h4 class="text-yellow-500 font-bold mb-2">General Disinfection</h4>
+                        <p class="text-sm">Eliminating microbes and infectious organisms via metabolic interference.</p>
+                    </div>
+                    <div class="p-6 bg-white/5 border border-white/10">
+                        <h4 class="text-yellow-500 font-bold mb-2">Termite Protection</h4>
+                        <p class="text-sm">Protecting high-value property investments from structural destruction.</p>
+                    </div>
+                    <div class="p-6 bg-white/5 border border-white/10">
+                        <h4 class="text-yellow-500 font-bold mb-2">General Pest Control</h4>
+                        <p class="text-sm">Maintaining disease-free environments through pest reduction programs.</p>
+                    </div>
+                    <div class="p-6 bg-white/5 border border-white/10">
+                        <h4 class="text-yellow-500 font-bold mb-2">General Construction</h4>
+                        <p class="text-sm">Quality construction, repairing, and sustainable development of buildings.</p>
+                    </div>
+                </div>
+                <p class="mt-8 text-center text-sm italic text-gray-400">Also providing: Roofing Supplies, Safety Devices, Office Supplies, and Shelving Storage.</p>
+            </div>
+        </div>
+
+        <div id="footer-p3" class="w-full"></div>
+    </div>
+
+    <template id="footer-template">
+        <footer class="barchem-footer">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div>
+                    <h4 class="footer-title">HEAD OFFICE</h4>
+                    <p class="text-sm leading-relaxed">
+                        9th Floor Unit 901, 902 Elab Corp.<br>
+                        BTTC Centre, Ortigas Ave.<br>
+                        Greenhills, San Juan, Philippines
+                    </p>
+                    <p class="mt-4 text-yellow-500 font-bold text-lg">0995-403-6719</p>
+                </div>
+                <div>
+                    <h4 class="footer-title">OPENING HOURS</h4>
+                    <div class="text-sm space-y-2">
+                        <div class="flex justify-between border-b border-gray-800 pb-1">
+                            <span>Mon - Sat:</span>
+                            <span class="text-white">7:00am – 7:30pm</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-1">
+                            <span>Sunday:</span>
+                            <span class="text-white">7:00am – 4:30pm</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col md:items-end justify-center">
+                    <h1 class="font-['Cinzel'] text-white text-xl">BARCHEM</h1>
+                    <p class="text-[10px] tracking-[3px] text-yellow-600 mt-1 uppercase">Trading & Services</p>
+                    <p class="text-[9px] text-gray-600 mt-6">© 2002-2024 Barchem Group. All Rights Reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </template>
+
+    <script>
+        // --- MATRIX ENGINE ---
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%&";
+        const fontSize = 16;
+        let columns = width / fontSize;
+        let drops = Array(Math.floor(columns)).fill(1);
+
+        function draw() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = "#00ff41";
+            ctx.font = fontSize + "px monospace";
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        setInterval(draw, 35);
+
+        // --- FOOTER INJECTION ---
+        function injectFooters() {
+            const template = document.getElementById('footer-template').innerHTML;
+            document.getElementById('footer-p2').innerHTML = template;
+            document.getElementById('footer-p3').innerHTML = template;
+        }
+        injectFooters();
+
+        // --- CORE NAVIGATION & ANIMATION ---
+        const historyText = "Barchem Trading and Services was initially started by Mr. Emmanuel R. Barcebal in 2002. Who is a leading Pest Control Specialist in the Philippines: In 2017, Mr. Ramon M. Gallinera of Asianic Philippines Corp joined his team and organized BARCHEM GROUP to engage in the development of Laguna Lake Development and Matnog to Samar Bridge. In 2018 Mr. Francis J. Guingona joined the group to lend his expertise in Financial Trading. In 2020 during the height of Pandemic Ms. Marivi A. Beltran a CPA and SEMACS Group in Jeddah KSA offered to initially fund the project. D & L Gas, LCC, USA, Florida, Gunung Steel, Jakarta Indonesia and E-steel of Singapore. In 2021 Goldridge Construction, Elab and Eagle System joined the Group and Collaborated to undertake the $50 Billion Dollar Development of LAGUNA LAKE and MATNOG to SAMAR BRIDGE.";
+
+        const accessBtn = document.getElementById('access-now-btn');
+        const enterBtn = document.getElementById('enter-portal-btn');
+        const welcomeUI = document.getElementById('welcome-ui');
+        const page2 = document.getElementById('page-2');
+        const portalContent = document.getElementById('portal-content');
+        const contentDiv = document.getElementById('animated-content');
+        const committee = document.getElementById('committee');
+
+        accessBtn.addEventListener('click', () => {
+            welcomeUI.style.opacity = '0';
+            setTimeout(() => {
+                welcomeUI.style.display = 'none';
+                page2.style.display = 'flex';
+                setTimeout(() => {
+                    page2.style.opacity = '1';
+                    startSequentialAnimation();
+                }, 100);
+            }, 800);
+        });
+
+        enterBtn.addEventListener('click', () => {
+            page2.style.opacity = '0';
+            setTimeout(() => {
+                page2.style.display = 'none';
+                portalContent.style.display = 'block';
+                setTimeout(() => { portalContent.style.opacity = '1'; }, 100);
+                window.scrollTo(0,0);
+                startGallery();
+            }, 1000);
+        });
+
+        async function startSequentialAnimation() {
+            const words = historyText.split(' ');
+            contentDiv.innerHTML = '';
+            
+            for (let word of words) {
+                const wordSpan = document.createElement('span');
+                wordSpan.className = 'word-wrapper';
+                contentDiv.appendChild(wordSpan);
+
+                const letters = word.split('');
+                const letterSpans = [];
+
+                letters.forEach(char => {
+                    const span = document.createElement('span');
+                    span.textContent = char;
+                    span.className = 'letter';
+                    span.style.setProperty('--x', (Math.random() * 500 - 250) + 'px');
+                    span.style.setProperty('--y', (Math.random() * 500 - 250) + 'px');
+                    span.style.setProperty('--z', (Math.random() * 500 - 250) + 'px');
+                    span.style.setProperty('--r', (Math.random() * 360) + 'deg');
+                    wordSpan.appendChild(span);
+                    letterSpans.push(span);
+                });
+
+                wordSpan.appendChild(document.createTextNode(' '));
+
+                for (let span of letterSpans) {
+                    await new Promise(r => setTimeout(r, 20));
+                    span.classList.add('assembled');
+                }
+                await new Promise(r => setTimeout(r, 30));
+            }
+
+            setTimeout(() => {
+                document.querySelectorAll('.letter').forEach(l => l.classList.add('gold-spark'));
+                committee.style.opacity = '1';
+                enterBtn.classList.remove('hidden');
+            }, 500);
+        }
+
+        // --- GALLERY ENGINE ---
+        let slideIndex = 0;
+        function startGallery() {
+            const slides = document.getElementsByClassName("gallery-slide");
+            if(slides.length === 0) return;
+            for (let i = 0; i < slides.length; i++) { slides[i].style.display = "none"; }
+            slideIndex++;
+            if (slideIndex > slides.length) {slideIndex = 1}    
+            slides[slideIndex-1].style.display = "block";  
+            setTimeout(startGallery, 4000); 
+        }
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            columns = width / fontSize;
+            drops = Array(Math.floor(columns)).fill(1);
+        });
+    </script>
+</body>
+</html>
