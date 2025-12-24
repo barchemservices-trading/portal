@@ -6,12 +6,14 @@
     <title>Barchem | Trading & Services</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Orbitron:wght@400;700;900&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --matrix-green: #00ff41;
             --gold-primary: #facc15;
             --gold-dark: #846006;
             --dark-void: #050505;
+            --holo-cyan: #00f3ff;
         }
 
         body, html {
@@ -25,13 +27,13 @@
             scroll-behavior: smooth;
         }
 
-        /* --- MATRIX BACKGROUND --- */
+        /* --- MATRIX BACKGROUND (Sharp Green) --- */
         #matrix-canvas {
             position: fixed;
             top: 0;
             left: 0;
             z-index: 1;
-            opacity: 0.25;
+            opacity: 0.4;
             pointer-events: none;
         }
 
@@ -41,12 +43,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.9) 100%);
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.95) 100%);
             z-index: 2;
             pointer-events: none;
         }
 
-        /* --- UI ELEMENTS --- */
+        /* --- TYPOGRAPHY --- */
         .logo-text {
             font-family: 'Cinzel', serif;
             font-size: clamp(2rem, 8vw, 5rem); 
@@ -80,48 +82,149 @@
             box-shadow: 0 0 0 var(--gold-dark);
         }
 
-        /* --- FLYING LETTERS --- */
-        #animated-content {
+        /* --- STICKY MENU (Icon Only) --- */
+        #nav-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-primary);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 0 10px var(--gold-dark);
+            transition: all 0.3s;
+        }
+        #nav-toggle:hover {
+            background: var(--gold-primary);
+            color: black;
+            box-shadow: 0 0 20px var(--gold-primary);
+        }
+
+        /* --- DASHBOARD SIDEBAR --- */
+        #dashboard-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 280px;
+            background: rgba(5, 5, 5, 0.98);
+            border-right: 2px solid var(--gold-primary);
+            z-index: 200;
+            transform: translateX(-100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            box-shadow: 10px 0 50px rgba(0,0,0,0.8);
+        }
+
+        #dashboard-sidebar.active {
+            transform: translateX(0);
+        }
+
+        .close-sidebar-btn {
+            align-self: flex-end;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            background: transparent;
+            border: 1px solid #555;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+        .close-sidebar-btn:hover {
+            border-color: var(--gold-primary);
+            color: var(--gold-primary);
+            transform: rotate(90deg);
+        }
+
+        .nav-item {
+            padding: 20px 30px;
+            color: #ccc;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(250, 204, 21, 0.1);
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        .nav-item:hover { color: var(--gold-primary); background: rgba(250, 204, 21, 0.05); padding-left: 40px; }
+        .nav-item.active-page { color: var(--gold-primary); border-left: 4px solid var(--gold-primary); }
+
+        /* --- ANIMATED TEXT (FLYING LETTERS) --- */
+        .animated-text-container {
             font-family: 'Lora', serif;
             font-size: clamp(1rem, 2.5vw, 1.25rem);
             line-height: 1.7;
             text-align: justify;
-            color: var(--matrix-green);
+            color: white;
             max-width: 900px;
             margin: 30px auto;
             padding: 0 15px;
+            perspective: 1000px;
         }
 
-        .word-wrapper {
-            display: inline-block;
-            white-space: nowrap;
-            margin-right: 6px;
-        }
+        .word-wrapper { display: inline-block; white-space: nowrap; margin-right: 6px; }
 
         .letter {
             display: inline-block;
             opacity: 0;
+            color: white; 
             transform: translate3d(var(--x), var(--y), var(--z)) rotate(var(--r));
-            transition: all 0.7s cubic-bezier(0.1, 0.8, 0.2, 1);
+            transition: all 0.7s cubic-bezier(0.1, 0.8, 0.2, 1); 
         }
 
-        .letter.assembled {
-            opacity: 1;
-            transform: translate3d(0, 0, 0) rotate(0);
+        .letter.assembled { opacity: 1; transform: translate3d(0, 0, 0) rotate(0); }
+        .letter.gold-spark { 
+            text-shadow: 0 0 8px var(--gold-primary); 
+            transition: text-shadow 1s ease;
         }
 
-        .letter.gold-spark { color: var(--gold-primary); }
-
-        /* --- GALLERY --- */
-        .gallery-container {
+        /* --- HOLOGRAM GALLERY --- */
+        .portal-wrapper {
+            position: relative;
             width: 100%;
             max-width: 1000px;
             margin: 20px auto;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid var(--gold-dark);
+        }
+
+        .gallery-container {
+            width: 100%;
             height: clamp(250px, 60vh, 500px);
             background: #000;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #333;
+            opacity: 1;
+            clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+            border-right: 2px solid transparent; 
+            box-shadow: none;
+            transition: clip-path 3s linear, border-right-color 0.2s;
+        }
+
+        .gallery-container.forming-active {
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            border-right: 3px solid var(--holo-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+
+        .gallery-container.forming-done {
+            border-right: 1px solid #333;
+            border: 1px solid var(--holo-cyan);
         }
 
         .gallery-slide {
@@ -130,16 +233,208 @@
             height: 100%;
             animation: fadeEffect 1s;
         }
-
         .gallery-slide img, .gallery-slide video {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
-
         @keyframes fadeEffect { from {opacity: 0.2;} to {opacity: 1;} }
 
-        /* --- FOOTER STYLES --- */
+        /* --- GENERIC ANIMATIONS --- */
+        .slide-hidden {
+            opacity: 0;
+            transform: translateX(-100px);
+            transition: all 1.2s ease-out;
+        }
+        .slide-visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* ------------------------------------------------------------------
+           NEW EFFECTS FOR MISSION & CORE VALUES 
+           ------------------------------------------------------------------ */
+        
+        /* 1. MISSION - Holographic Scanner & 3D Tilt */
+        #mission-container {
+            position: relative;
+            /* 3D Transform Settings */
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+            /* Visual Styling */
+            background: linear-gradient(145deg, rgba(10,10,10,0.9), rgba(0,0,0,0.95));
+            border: 1px solid rgba(250, 204, 21, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden; /* Contains the scanner beam */
+            transition: transform 0.1s ease-out, box-shadow 0.3s ease;
+        }
+
+        /* ADJUSTED MISSION TEXT SIZES - SMALLER FOR MOBILE/PC */
+        #mission-container .mission-title {
+            font-family: 'Cinzel', serif;
+            color: var(--gold-primary);
+            /* Reduced range from [1.5-2.5rem] to [1.2-2rem] */
+            font-size: clamp(1.2rem, 4vw, 2rem); 
+            margin-bottom: 0.8rem; /* Reduced margin */
+            letter-spacing: 0.2rem;
+        }
+
+        #mission-container .mission-quote {
+            /* Reduced range from [1.1-2.2rem] to [0.85-1.4rem] */
+            font-size: clamp(0.85rem, 3.5vw, 1.4rem); 
+            font-style: italic;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            line-height: 1.4;
+        }
+
+        /* The moving scanner light beam */
+        #mission-container::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(250, 204, 21, 0.1) 45%, rgba(250, 204, 21, 0.4) 50%, rgba(250, 204, 21, 0.1) 55%, transparent 100%);
+            transform: skewX(-25deg);
+            animation: holo-scan 4s infinite linear;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Content inside mission needs to be above the beam */
+        #mission-container .mission-content {
+            position: relative;
+            z-index: 2;
+            transform: translateZ(20px); /* Pops text out in 3D */
+        }
+
+        @keyframes holo-scan {
+            0% { left: -150%; }
+            100% { left: 150%; }
+        }
+
+        /* 2. CORE VALUES - Cyber Data Cards */
+        .cyber-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 4px solid #444; /* Default inactive color */
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 20px 25px;
+            margin-bottom: 15px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: default;
+            
+            /* Initial reveal state logic handled by JS class toggle, 
+               but base style is here */
+            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        /* Hover Effect for Cards */
+        .cyber-card:hover {
+            background: linear-gradient(90deg, rgba(250, 204, 21, 0.1), transparent);
+            border-left-color: var(--gold-primary);
+            transform: translateX(15px) scale(1.02);
+            box-shadow: -5px 5px 20px rgba(0,0,0,0.5);
+        }
+
+        .cyber-card strong {
+            color: var(--gold-primary);
+            text-shadow: 0 0 5px rgba(250, 204, 21, 0.5);
+            font-size: 1.1em;
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+
+        /* Reveal Animation overrides */
+        .value-text-hidden {
+            opacity: 0;
+            transform: perspective(600px) rotateX(-20deg) translateY(20px);
+            transition: all 0.8s ease;
+        }
+        .value-text-visible {
+            opacity: 1;
+            transform: perspective(600px) rotateX(0) translateY(0);
+        }
+
+        /* ------------------------------------------------------------------ */
+
+
+        /* Service Boxes */
+        .service-box {
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        .service-box.stagger-visible {
+            animation: slideInBox 0.8s forwards;
+        }
+        @keyframes slideInBox { to { opacity: 1; transform: translateX(0); } }
+
+        .service-box:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--gold-primary);
+            box-shadow: 0 0 15px var(--gold-primary);
+        }
+        .service-box::after {
+            content: 'CLICK FOR OPTIONS';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--gold-primary);
+            color: black;
+            font-size: 0.7rem;
+            text-align: center;
+            font-weight: bold;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+        .service-box:hover::after { transform: translateY(0); }
+
+        /* --- MODAL --- */
+        #service-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 300;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: #111;
+            border: 2px solid var(--gold-primary);
+            padding: 30px;
+            max-width: 90%;
+            width: 400px;
+            text-align: center;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 0 0 30px var(--gold-dark);
+            animation: popIn 0.4s ease-out;
+        }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #666;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .close-modal:hover { color: white; }
+
+        /* --- FOOTER & SECTIONS --- */
         .barchem-footer {
             background: rgba(0, 0, 0, 0.9);
             border-top: 1px solid rgba(250, 204, 21, 0.3);
@@ -148,16 +443,7 @@
             color: #ccc;
             margin-top: 50px;
         }
-
-        .footer-title {
-            color: var(--gold-primary);
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        /* --- PAGE SECTIONS --- */
+        .footer-title { color: var(--gold-primary); font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 15px; font-weight: bold; }
         #page-2, #portal-content { display: none; position: relative; z-index: 10; opacity: 0; transition: opacity 1s ease; }
     </style>
 </head>
@@ -166,17 +452,31 @@
     <canvas id="matrix-canvas"></canvas>
     <div class="vignette"></div>
 
+    <button id="nav-toggle"><i class="fas fa-bars"></i></button>
+
+    <div id="dashboard-sidebar">
+        <button class="close-sidebar-btn" id="close-sidebar"><i class="fas fa-times"></i></button>
+        <div class="text-center mb-8">
+            <h2 class="text-yellow-500 font-bold text-2xl font-['Cinzel']">BARCHEM</h2>
+            <p class="text-xs text-gray-500 tracking-widest">DASHBOARD</p>
+        </div>
+        <div class="nav-item" onclick="navigateTo('home')">1. Introduction</div>
+        <div class="nav-item" onclick="navigateTo('profile')">2. Profile & History</div>
+        <div class="nav-item" onclick="navigateTo('company')">3. Company Portal</div>
+        <div class="mt-auto p-6 text-xs text-gray-600">System Status: <span class="text-green-500">ONLINE</span></div>
+    </div>
+
     <div id="welcome-ui" class="relative z-10 flex flex-col items-center justify-center h-screen text-center px-6">
         <h1 class="logo-text">Barchem</h1>
         <h2 class="text-yellow-500 tracking-[5px] font-bold text-sm md:text-lg mb-8">TRADING AND SERVICES</h2>
         <button id="access-now-btn" class="btn-gold">Access Now</button>
     </div>
 
-    <div id="page-2" class="flex flex-col items-center pt-12">
+    <div id="page-2" class="flex flex-col items-center pt-20 w-full">
         <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png" alt="Earth" class="w-32 md:w-44 mb-6">
         <h1 class="logo-text text-3xl md:text-5xl mb-8 px-4">Barchem Trading and Services</h1>
         
-        <div id="animated-content"></div>
+        <div id="history-content" class="animated-text-container" style="color: #00ff41;"></div>
 
         <div id="committee" class="opacity-0 w-full max-w-4xl px-6 text-center mt-12 transition-opacity duration-[2000ms]">
             <h3 class="font-['Cinzel'] text-yellow-500 text-2xl mb-8 underline decoration-gold-dark underline-offset-8">WHO WE ARE</h3>
@@ -190,71 +490,81 @@
                 <span class="text-yellow-600 text-xs uppercase tracking-widest">Legal Counsel</span><br>
                 <span class="text-white text-sm">Atty. Marie Cenjidoza | Atty. Jamie Salvatierra</span>
             </div>
-            
             <button id="enter-portal-btn" class="btn-gold mt-12 hidden">Enter Portal</button>
         </div>
-
         <div id="footer-p2" class="w-full"></div>
     </div>
 
-    <div id="portal-content" class="pt-10">
+    <div id="portal-content" class="pt-16 w-full">
         <div class="flex flex-col items-center mb-10 px-4 text-center">
             <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png" alt="Earth" class="w-20 mb-4">
             <h1 class="logo-text text-2xl md:text-4xl">Barchem Trading and Services</h1>
         </div>
 
-        <div class="gallery-container">
-            <div class="gallery-slide"><video autoplay muted loop playsinline><source src="barchem1.mp4" type="video/mp4"></video></div>
-            <div class="gallery-slide"><img src="barchem2.jpg"></div>
-            <div class="gallery-slide"><img src="barchem3.jpg"></div>
-            <div class="gallery-slide"><img src="barchem4.jpg"></div>
-            <div class="gallery-slide"><img src="barchem5.jpg"></div>
-            <div class="gallery-slide"><img src="barchem6.jpg"></div>
-            <div class="gallery-slide"><img src="barchem7.jpg"></div>
-            <div class="gallery-slide"><img src="barchem8.jpg"></div>
-            <div class="gallery-slide"><img src="barchem9.jpg"></div>
-            <div class="gallery-slide"><img src="barchem10.jpg"></div>
-            <div class="gallery-slide"><img src="barchem11.jpg"></div>
+        <div class="portal-wrapper">
+            <div class="gallery-container" id="gallery-box">
+                <div class="gallery-slide"><video autoplay muted loop playsinline><source src="barchem1.mp4" type="video/mp4"></video></div>
+                <div class="gallery-slide"><img src="barchem2.jpg" alt="Gallery 1"></div>
+                <div class="gallery-slide"><img src="barchem3.jpg" alt="Gallery 2"></div>
+                <div class="gallery-slide"><img src="barchem4.jpg" alt="Gallery 3"></div>
+                <div class="gallery-slide"><img src="barchem5.jpg" alt="Gallery 4"></div>
+            </div>
         </div>
 
-        <div class="max-w-5xl mx-auto px-6 font-['Lora'] text-gray-200 leading-relaxed">
-            <div class="my-16">
-                <h2 class="font-['Cinzel'] text-yellow-500 text-3xl border-b-2 border-yellow-900 inline-block mb-6">ABOUT US</h2>
-                <p class="mb-6">Barchem was established in 2002 for trading and general contracting. Since its inception, Barchem has successfully performed all awarded projects in maintenance, disinfection, pest control, construction services, and the distribution of safety devices.</p>
-                <p>Barchem has gained the unwavering trust of its clients, with its name becoming a hallmark of credibility and professionalism.</p>
+        <div class="max-w-5xl mx-auto px-6 font-['Lora'] text-gray-200 leading-relaxed overflow-hidden">
+            
+            <div class="my-16" id="about-section">
+                <h2 id="about-label" class="slide-hidden font-['Cinzel'] text-yellow-500 text-3xl border-b-2 border-yellow-900 inline-block mb-6">ABOUT US</h2>
+                <div id="about-text-container" class="animated-text-container" style="padding:0; margin:0; text-align: left;">
+                    </div>
             </div>
 
-            <div class="mb-16 p-8 border border-yellow-900/30 bg-black/40 text-center">
-                <h2 class="font-['Cinzel'] text-yellow-500 text-2xl mb-4">MISSION</h2>
-                <p class="text-xl md:text-2xl italic text-white">"Barchem delivers innovative technology that exceeds customers’ needs."</p>
-            </div>
-
-            <div class="mb-16">
-                <h2 class="font-['Cinzel'] text-yellow-500 text-3xl border-b-2 border-yellow-900 inline-block mb-8">CORE VALUES</h2>
-                <div class="space-y-8">
-                    <div class="pl-4 border-l-4 border-yellow-500"><strong>Employees:</strong> The source of our success. We communicate openly, treat each other with respect, and promote teamwork and personal growth.</div>
-                    <div class="pl-4 border-l-4 border-yellow-500"><strong>Customers:</strong> Receive our strongest commitment to quality products and superior service.</div>
-                    <div class="pl-4 border-l-4 border-yellow-500"><strong>Products:</strong> Built on innovative technology and continuous improvement.</div>
-                    <div class="pl-4 border-l-4 border-yellow-500"><strong>Conduct:</strong> A deep concern for human safety and environmental stewardship, embracing the highest ethical standards.</div>
+            <div id="mission-container" class="slide-hidden mb-12 p-6 text-center rounded-lg">
+                <div class="mission-content">
+                    <h2 class="mission-title">MISSION</h2>
+                    <p class="mission-quote">"Barchem delivers innovative technology that exceeds customers’ needs."</p>
+                    <div class="w-16 h-1 bg-yellow-500 mx-auto mt-4"></div>
                 </div>
             </div>
 
-            <div class="mb-16">
-                <h2 class="font-['Cinzel'] text-yellow-500 text-3xl border-b-2 border-yellow-900 inline-block mb-8">SERVICES</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="p-6 bg-white/5 border border-white/10">
+            <div class="mb-16" id="values-section">
+                <h2 id="values-label" class="slide-hidden font-['Cinzel'] text-yellow-500 text-3xl border-b-2 border-yellow-900 inline-block mb-8">CORE VALUES</h2>
+                <div class="space-y-4" id="values-list">
+                    <div class="cyber-card value-text-hidden">
+                        <div><strong>Employees:</strong></div>
+                        <span class="text-sm md:text-base">The source of our success. We communicate openly, treat each other with respect, and promote teamwork and personal growth.</span>
+                    </div>
+                    <div class="cyber-card value-text-hidden">
+                        <div><strong>Customers:</strong></div>
+                        <span class="text-sm md:text-base">Receive our strongest commitment to quality products and superior service.</span>
+                    </div>
+                    <div class="cyber-card value-text-hidden">
+                        <div><strong>Products:</strong></div>
+                        <span class="text-sm md:text-base">Built on innovative technology and continuous improvement.</span>
+                    </div>
+                    <div class="cyber-card value-text-hidden">
+                        <div><strong>Conduct:</strong></div>
+                        <span class="text-sm md:text-base">A deep concern for human safety and environmental stewardship, embracing the highest ethical standards.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-16" id="services-section">
+                <h2 id="services-label" class="slide-hidden font-['Cinzel'] text-yellow-500 text-3xl border-b-2 border-yellow-900 inline-block mb-8">SERVICES</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="services-grid">
+                    <div class="service-box p-6 bg-white/5 border border-white/10" onclick="openServiceModal('General Disinfection')">
                         <h4 class="text-yellow-500 font-bold mb-2">General Disinfection</h4>
                         <p class="text-sm">Eliminating microbes and infectious organisms via metabolic interference.</p>
                     </div>
-                    <div class="p-6 bg-white/5 border border-white/10">
+                    <div class="service-box p-6 bg-white/5 border border-white/10" onclick="openServiceModal('Termite Protection')">
                         <h4 class="text-yellow-500 font-bold mb-2">Termite Protection</h4>
                         <p class="text-sm">Protecting high-value property investments from structural destruction.</p>
                     </div>
-                    <div class="p-6 bg-white/5 border border-white/10">
+                    <div class="service-box p-6 bg-white/5 border border-white/10" onclick="openServiceModal('General Pest Control')">
                         <h4 class="text-yellow-500 font-bold mb-2">General Pest Control</h4>
                         <p class="text-sm">Maintaining disease-free environments through pest reduction programs.</p>
                     </div>
-                    <div class="p-6 bg-white/5 border border-white/10">
+                    <div class="service-box p-6 bg-white/5 border border-white/10" onclick="openServiceModal('General Construction')">
                         <h4 class="text-yellow-500 font-bold mb-2">General Construction</h4>
                         <p class="text-sm">Quality construction, repairing, and sustainable development of buildings.</p>
                     </div>
@@ -262,8 +572,26 @@
                 <p class="mt-8 text-center text-sm italic text-gray-400">Also providing: Roofing Supplies, Safety Devices, Office Supplies, and Shelving Storage.</p>
             </div>
         </div>
-
         <div id="footer-p3" class="w-full"></div>
+    </div>
+
+    <div id="service-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeServiceModal()">&times;</span>
+            <h3 id="modal-service-title" class="text-yellow-500 font-['Cinzel'] text-xl mb-6">Service Name</h3>
+            <p class="text-sm text-gray-400 mb-8">Please choose an option to contact us regarding this service.</p>
+            <div class="flex flex-col gap-4">
+                <a href="https://m.me/100054516412008" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded transition">
+                    <i class="fab fa-facebook-messenger mr-2"></i> Send Message
+                </a>
+                <button onclick="revealNumber()" class="bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-3 px-4 rounded transition">
+                    <i class="fas fa-phone mr-2"></i> Call Us
+                </button>
+                <div id="contact-number-display" class="hidden text-xl text-white font-bold mt-2 animate-bounce">
+                    <a href="tel:09954036719" class="text-white hover:text-yellow-400">0995-403-6719</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <template id="footer-template">
@@ -276,19 +604,13 @@
                         BTTC Centre, Ortigas Ave.<br>
                         Greenhills, San Juan, Philippines
                     </p>
-                    <p class="mt-4 text-yellow-500 font-bold text-lg">0995-403-6719</p>
+                    <p class="mt-4 text-yellow-500 font-bold text-lg"><a href="tel:09954036719">0995-403-6719</a></p>
                 </div>
                 <div>
                     <h4 class="footer-title">OPENING HOURS</h4>
                     <div class="text-sm space-y-2">
-                        <div class="flex justify-between border-b border-gray-800 pb-1">
-                            <span>Mon - Sat:</span>
-                            <span class="text-white">7:00am – 7:30pm</span>
-                        </div>
-                        <div class="flex justify-between border-b border-gray-800 pb-1">
-                            <span>Sunday:</span>
-                            <span class="text-white">7:00am – 4:30pm</span>
-                        </div>
+                        <div class="flex justify-between border-b border-gray-800 pb-1"><span>Mon - Sat:</span><span class="text-white">7:00am – 7:30pm</span></div>
+                        <div class="flex justify-between border-b border-gray-800 pb-1"><span>Sunday:</span><span class="text-white">7:00am – 4:30pm</span></div>
                     </div>
                 </div>
                 <div class="flex flex-col md:items-end justify-center">
@@ -314,14 +636,17 @@
         function draw() {
             ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
             ctx.fillRect(0, 0, width, height);
-            ctx.fillStyle = "#00ff41";
             ctx.font = fontSize + "px monospace";
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = "#00ff41";
             for (let i = 0; i < drops.length; i++) {
                 const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                ctx.fillStyle = (Math.random() > 0.95) ? "#fff" : "#00ff41"; 
                 ctx.fillText(text, i * fontSize, drops[i] * fontSize);
                 if (drops[i] * fontSize > height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
             }
+            ctx.shadowBlur = 0;
         }
         setInterval(draw, 35);
 
@@ -333,52 +658,84 @@
         }
         injectFooters();
 
-        // --- CORE NAVIGATION & ANIMATION ---
-        const historyText = "Barchem Trading and Services was initially started by Mr. Emmanuel R. Barcebal in 2002. Who is a leading Pest Control Specialist in the Philippines: In 2017, Mr. Ramon M. Gallinera of Asianic Philippines Corp joined his team and organized BARCHEM GROUP to engage in the development of Laguna Lake Development and Matnog to Samar Bridge. In 2018 Mr. Francis J. Guingona joined the group to lend his expertise in Financial Trading. In 2020 during the height of Pandemic Ms. Marivi A. Beltran a CPA and SEMACS Group in Jeddah KSA offered to initially fund the project. D & L Gas, LCC, USA, Florida, Gunung Steel, Jakarta Indonesia and E-steel of Singapore. In 2021 Goldridge Construction, Elab and Eagle System joined the Group and Collaborated to undertake the $50 Billion Dollar Development of LAGUNA LAKE and MATNOG to SAMAR BRIDGE.";
+        // --- NAVIGATION ---
+        const navToggle = document.getElementById('nav-toggle');
+        const sidebar = document.getElementById('dashboard-sidebar');
+        const closeSidebarBtn = document.getElementById('close-sidebar');
 
-        const accessBtn = document.getElementById('access-now-btn');
-        const enterBtn = document.getElementById('enter-portal-btn');
-        const welcomeUI = document.getElementById('welcome-ui');
-        const page2 = document.getElementById('page-2');
-        const portalContent = document.getElementById('portal-content');
-        const contentDiv = document.getElementById('animated-content');
-        const committee = document.getElementById('committee');
+        function openSidebar() { sidebar.classList.add('active'); navToggle.style.display = 'none'; }
+        function closeSidebar() { sidebar.classList.remove('active'); navToggle.style.display = 'flex'; }
+        navToggle.addEventListener('click', openSidebar);
+        closeSidebarBtn.addEventListener('click', closeSidebar);
 
-        accessBtn.addEventListener('click', () => {
-            welcomeUI.style.opacity = '0';
-            setTimeout(() => {
-                welcomeUI.style.display = 'none';
+        function navigateTo(page) {
+            closeSidebar();
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active-page'));
+            
+            const welcomeUI = document.getElementById('welcome-ui');
+            const page2 = document.getElementById('page-2');
+            const portalContent = document.getElementById('portal-content');
+
+            welcomeUI.style.display = 'none'; welcomeUI.style.opacity = '0';
+            page2.style.display = 'none'; page2.style.opacity = '0';
+            portalContent.style.display = 'none'; portalContent.style.opacity = '0';
+
+            if(page === 'home') {
+                welcomeUI.style.display = 'flex'; setTimeout(() => welcomeUI.style.opacity = '1', 50);
+            } else if (page === 'profile') {
                 page2.style.display = 'flex';
                 setTimeout(() => {
                     page2.style.opacity = '1';
-                    startSequentialAnimation();
-                }, 100);
-            }, 800);
-        });
-
-        enterBtn.addEventListener('click', () => {
-            page2.style.opacity = '0';
-            setTimeout(() => {
-                page2.style.display = 'none';
+                    startHistoryAnimation();
+                }, 50);
+            } else if (page === 'company') {
                 portalContent.style.display = 'block';
-                setTimeout(() => { portalContent.style.opacity = '1'; }, 100);
-                window.scrollTo(0,0);
+                setTimeout(() => {
+                    portalContent.style.opacity = '1';
+                    // Trigger "Konti Konti Nabubuo" Effect for Gallery
+                    document.getElementById('gallery-box').classList.add('forming-active');
+                    // Remove the right-border after animation (3s)
+                    setTimeout(() => {
+                        document.getElementById('gallery-box').classList.add('forming-done');
+                    }, 3000);
+                }, 50);
                 startGallery();
-            }, 1000);
-        });
+            }
+            window.scrollTo(0,0);
+        }
 
-        async function startSequentialAnimation() {
-            const words = historyText.split(' ');
-            contentDiv.innerHTML = '';
-            
+        // --- TEXT ANIMATION LOGIC ---
+        const historyText = "Barchem Trading and Services was initially started by Mr. Emmanuel R. Barcebal in 2002. Who is a leading Pest Control Specialist in the Philippines: In 2017, Mr. Ramon M. Gallinera of Asianic Philippines Corp joined his team and organized BARCHEM GROUP to engage in the development of Laguna Lake Development and Matnog to Samar Bridge. In 2018 Mr. Francis J. Guingona joined the group to lend his expertise in Financial Trading. In 2020 during the height of Pandemic Ms. Marivi A. Beltran a CPA and SEMACS Group in Jeddah KSA offered to initially fund the project. D & L Gas, LCC, USA, Florida, Gunung Steel, Jakarta Indonesia and E-steel of Singapore. In 2021 Goldridge Construction, Elab and Eagle System joined the Group and Collaborated to undertake the $50 Billion Dollar Development of LAGUNA LAKE and MATNOG to SAMAR BRIDGE.";
+        const aboutTextString = "Barchem was established in 2002 for trading and general contracting. Since its inception, Barchem has successfully performed all awarded projects in maintenance, disinfection, pest control, construction services, and the distribution of safety devices. Barchem has gained the unwavering trust of its clients, with its name becoming a hallmark of credibility and professionalism.";
+
+        const committee = document.getElementById('committee');
+        const historyContainer = document.getElementById('history-content');
+        const aboutContainer = document.getElementById('about-text-container');
+        
+        let historyAnimRun = false;
+        let aboutAnimRun = false;
+
+        async function startHistoryAnimation() {
+            if(historyAnimRun) return; 
+            // Normal speed for History
+            await buildFlyingText(historyContainer, historyText, 20); 
+            committee.style.opacity = '1';
+            document.getElementById('enter-portal-btn').classList.remove('hidden');
+            historyAnimRun = true;
+        }
+
+        // Generic Flying Text Builder
+        async function buildFlyingText(container, text, delayMs, forceDuration = 0) {
+            container.innerHTML = '';
+            const words = text.split(' ');
+            const allSpans = [];
+
+            // Build DOM
             for (let word of words) {
                 const wordSpan = document.createElement('span');
                 wordSpan.className = 'word-wrapper';
-                contentDiv.appendChild(wordSpan);
-
+                container.appendChild(wordSpan);
                 const letters = word.split('');
-                const letterSpans = [];
-
                 letters.forEach(char => {
                     const span = document.createElement('span');
                     span.textContent = char;
@@ -388,26 +745,109 @@
                     span.style.setProperty('--z', (Math.random() * 500 - 250) + 'px');
                     span.style.setProperty('--r', (Math.random() * 360) + 'deg');
                     wordSpan.appendChild(span);
-                    letterSpans.push(span);
+                    allSpans.push(span);
                 });
-
                 wordSpan.appendChild(document.createTextNode(' '));
-
-                for (let span of letterSpans) {
-                    await new Promise(r => setTimeout(r, 20));
-                    span.classList.add('assembled');
-                }
-                await new Promise(r => setTimeout(r, 30));
             }
 
-            setTimeout(() => {
-                document.querySelectorAll('.letter').forEach(l => l.classList.add('gold-spark'));
-                committee.style.opacity = '1';
-                enterBtn.classList.remove('hidden');
-            }, 500);
+            // Animate
+            let chunkSize = 1;
+            let finalDelay = delayMs;
+
+            if (forceDuration > 0) {
+                finalDelay = forceDuration / allSpans.length;
+                if(finalDelay < 5) { 
+                    finalDelay = 10; 
+                    chunkSize = Math.ceil(allSpans.length / (forceDuration / 10));
+                }
+            }
+
+            for (let i = 0; i < allSpans.length; i += chunkSize) {
+                for(let j=0; j < chunkSize && (i+j) < allSpans.length; j++){
+                    allSpans[i+j].classList.add('assembled');
+                }
+                await new Promise(r => setTimeout(r, finalDelay));
+            }
+            
+            setTimeout(() => allSpans.forEach(l => l.classList.add('gold-spark')), 500);
         }
 
-        // --- GALLERY ENGINE ---
+        // --- 3D TILT EFFECT FOR MISSION ---
+        const missionBox = document.getElementById('mission-container');
+        missionBox.addEventListener('mousemove', (e) => {
+            const rect = missionBox.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const xCenter = rect.width / 2;
+            const yCenter = rect.height / 2;
+            
+            // Calculate rotation (max 10 degrees)
+            const rotateX = ((y - yCenter) / yCenter) * -5; 
+            const rotateY = ((x - xCenter) / xCenter) * 5;
+
+            missionBox.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+
+        missionBox.addEventListener('mouseleave', () => {
+            missionBox.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+        });
+
+
+        // --- OBSERVER ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+
+                    if(id === 'about-label') {
+                        entry.target.classList.remove('slide-hidden');
+                        entry.target.classList.add('slide-visible');
+                    }
+                    if(id === 'about-section' && !aboutAnimRun) {
+                        aboutAnimRun = true;
+                        buildFlyingText(aboutContainer, aboutTextString, 0, 5000);
+                    }
+                    if(id === 'mission-container') {
+                        entry.target.classList.remove('slide-hidden');
+                        entry.target.classList.add('slide-visible');
+                    }
+                    if(id === 'values-label') {
+                        entry.target.classList.remove('slide-hidden');
+                        entry.target.classList.add('slide-visible');
+                    }
+                    if(id === 'values-list') {
+                        // Modified trigger for new Cyber Cards
+                        const cards = entry.target.querySelectorAll('.cyber-card');
+                        cards.forEach((card, idx) => {
+                            setTimeout(() => {
+                                card.classList.remove('value-text-hidden');
+                                card.classList.add('value-text-visible');
+                            }, idx * 200); // Stagger effect
+                        });
+                    }
+                    if(id === 'services-label') {
+                        entry.target.classList.remove('slide-hidden');
+                        entry.target.classList.add('slide-visible');
+                    }
+                    if(id === 'services-grid') {
+                        entry.target.querySelectorAll('.service-box').forEach((box, index) => {
+                            setTimeout(() => box.classList.add('stagger-visible'), index * 200);
+                        });
+                    }
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+
+        ['about-label', 'about-section', 'mission-container', 'values-label', 'values-list', 'services-label', 'services-grid']
+            .forEach(id => {
+                const el = document.getElementById(id);
+                if(el) observer.observe(el);
+            });
+
+        document.getElementById('access-now-btn').addEventListener('click', () => navigateTo('profile'));
+        document.getElementById('enter-portal-btn').addEventListener('click', () => navigateTo('company'));
+
         let slideIndex = 0;
         function startGallery() {
             const slides = document.getElementsByClassName("gallery-slide");
@@ -418,6 +858,16 @@
             slides[slideIndex-1].style.display = "block";  
             setTimeout(startGallery, 4000); 
         }
+
+        const modal = document.getElementById('service-modal');
+        function openServiceModal(serviceName) {
+            document.getElementById('modal-service-title').innerText = serviceName;
+            modal.style.display = 'flex';
+            document.getElementById('contact-number-display').classList.add('hidden'); 
+        }
+        function closeServiceModal() { modal.style.display = 'none'; }
+        function revealNumber() { document.getElementById('contact-number-display').classList.remove('hidden'); }
+        window.onclick = function(event) { if (event.target == modal) closeServiceModal(); }
 
         window.addEventListener('resize', () => {
             width = canvas.width = window.innerWidth;
