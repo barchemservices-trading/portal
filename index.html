@@ -27,7 +27,7 @@
             scroll-behavior: smooth;
         }
 
-        /* --- MATRIX BACKGROUND (Sharp Green) --- */
+        /* --- MATRIX BACKGROUND --- */
         #matrix-canvas {
             position: fixed;
             top: 0;
@@ -82,7 +82,7 @@
             box-shadow: 0 0 0 var(--gold-dark);
         }
 
-        /* --- STICKY MENU (Icon Only) --- */
+        /* --- STICKY MENU --- */
         #nav-toggle {
             position: fixed;
             top: 20px;
@@ -165,7 +165,7 @@
         .nav-item:hover { color: var(--gold-primary); background: rgba(250, 204, 21, 0.05); padding-left: 40px; }
         .nav-item.active-page { color: var(--gold-primary); border-left: 4px solid var(--gold-primary); }
 
-        /* --- ANIMATED TEXT (FLYING LETTERS) --- */
+        /* --- ANIMATED TEXT --- */
         .animated-text-container {
             font-family: 'Lora', serif;
             font-size: clamp(1rem, 2.5vw, 1.25rem);
@@ -194,7 +194,10 @@
             transition: text-shadow 1s ease;
         }
 
-        /* --- HOLOGRAM GALLERY --- */
+        /* ------------------------------------------------------------------
+           UPDATED HOLOGRAM GALLERY: LEFT TO RIGHT WIPE
+           ------------------------------------------------------------------ 
+        */
         .portal-wrapper {
             position: relative;
             width: 100%;
@@ -204,41 +207,69 @@
 
         .gallery-container {
             width: 100%;
+            /* Responsive Height for PC and Mobile */
             height: clamp(250px, 60vh, 500px);
             background: #000;
-            position: relative;
+            position: relative; /* Essential for absolute positioning of slides */
             overflow: hidden;
             border: 1px solid #333;
-            opacity: 1;
+            /* Container Initial Reveal State */
             clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
             border-right: 2px solid transparent; 
-            box-shadow: none;
-            transition: clip-path 3s linear, border-right-color 0.2s;
+            transition: clip-path 2s ease-out, border-right-color 0.2s;
         }
 
+        /* Container Reveal Animation Classes */
         .gallery-container.forming-active {
             clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
             border-right: 3px solid var(--holo-cyan);
             box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
         }
-
         .gallery-container.forming-done {
             border-right: 1px solid #333;
             border: 1px solid var(--holo-cyan);
         }
 
+        /* Slide Styles */
         .gallery-slide {
-            display: none;
+            position: absolute; /* Stack slides on top of each other */
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            animation: fadeEffect 1s;
+            opacity: 0; /* Hidden by default */
+            z-index: 0;
+            background: #000; /* Prevent transparency overlap */
         }
+
+        /* The Active Slide: Triggers Left-to-Right Wipe */
+        .gallery-slide.active-slide {
+            opacity: 1;
+            z-index: 10;
+            /* The Wipe Animation */
+            animation: holoWipeLeftRight 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
         .gallery-slide img, .gallery-slide video {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: contain; /* Ensures image fits within box without distortion */
         }
-        @keyframes fadeEffect { from {opacity: 0.2;} to {opacity: 1;} }
+
+        @keyframes holoWipeLeftRight {
+            0% {
+                clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+                filter: brightness(2) contrast(1.5); /* Bright flash at start */
+            }
+            50% {
+                filter: brightness(1) contrast(1);
+            }
+            100% {
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            }
+        }
+
+        /* ------------------------------------------------------------------ */
 
         /* --- GENERIC ANIMATIONS --- */
         .slide-hidden {
@@ -251,36 +282,27 @@
             transform: translateX(0);
         }
 
-        /* ------------------------------------------------------------------
-           NEW EFFECTS FOR MISSION & CORE VALUES 
-           ------------------------------------------------------------------ */
-        
-        /* 1. MISSION - Holographic Scanner & 3D Tilt */
+        /* --- MISSION SECTION (Compact) --- */
         #mission-container {
             position: relative;
-            /* 3D Transform Settings */
             transform-style: preserve-3d;
             transform: perspective(1000px);
-            /* Visual Styling */
             background: linear-gradient(145deg, rgba(10,10,10,0.9), rgba(0,0,0,0.95));
             border: 1px solid rgba(250, 204, 21, 0.3);
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            overflow: hidden; /* Contains the scanner beam */
+            overflow: hidden;
             transition: transform 0.1s ease-out, box-shadow 0.3s ease;
         }
 
-        /* ADJUSTED MISSION TEXT SIZES - SMALLER FOR MOBILE/PC */
         #mission-container .mission-title {
             font-family: 'Cinzel', serif;
             color: var(--gold-primary);
-            /* Reduced range from [1.5-2.5rem] to [1.2-2rem] */
             font-size: clamp(1.2rem, 4vw, 2rem); 
-            margin-bottom: 0.8rem; /* Reduced margin */
+            margin-bottom: 0.8rem;
             letter-spacing: 0.2rem;
         }
 
         #mission-container .mission-quote {
-            /* Reduced range from [1.1-2.2rem] to [0.85-1.4rem] */
             font-size: clamp(0.85rem, 3.5vw, 1.4rem); 
             font-style: italic;
             color: white;
@@ -288,7 +310,6 @@
             line-height: 1.4;
         }
 
-        /* The moving scanner light beam */
         #mission-container::after {
             content: '';
             position: absolute;
@@ -303,11 +324,10 @@
             z-index: 1;
         }
 
-        /* Content inside mission needs to be above the beam */
         #mission-container .mission-content {
             position: relative;
             z-index: 2;
-            transform: translateZ(20px); /* Pops text out in 3D */
+            transform: translateZ(20px);
         }
 
         @keyframes holo-scan {
@@ -315,23 +335,19 @@
             100% { left: 150%; }
         }
 
-        /* 2. CORE VALUES - Cyber Data Cards */
+        /* --- CORE VALUES --- */
         .cyber-card {
             position: relative;
             background: rgba(255, 255, 255, 0.02);
-            border-left: 4px solid #444; /* Default inactive color */
+            border-left: 4px solid #444; 
             border-bottom: 1px solid rgba(255,255,255,0.05);
             padding: 20px 25px;
             margin-bottom: 15px;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: default;
-            
-            /* Initial reveal state logic handled by JS class toggle, 
-               but base style is here */
             clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
         }
 
-        /* Hover Effect for Cards */
         .cyber-card:hover {
             background: linear-gradient(90deg, rgba(250, 204, 21, 0.1), transparent);
             border-left-color: var(--gold-primary);
@@ -347,7 +363,6 @@
             margin-bottom: 4px;
         }
 
-        /* Reveal Animation overrides */
         .value-text-hidden {
             opacity: 0;
             transform: perspective(600px) rotateX(-20deg) translateY(20px);
@@ -358,10 +373,7 @@
             transform: perspective(600px) rotateX(0) translateY(0);
         }
 
-        /* ------------------------------------------------------------------ */
-
-
-        /* Service Boxes */
+        /* --- SERVICES (Auto Hover) --- */
         .service-box {
             transition: all 0.3s;
             cursor: pointer;
@@ -375,12 +387,13 @@
         }
         @keyframes slideInBox { to { opacity: 1; transform: translateX(0); } }
 
-        .service-box:hover {
+        .service-box:hover, .service-box.auto-hover {
             transform: translateY(-5px);
             background: rgba(255, 255, 255, 0.1);
             border-color: var(--gold-primary);
             box-shadow: 0 0 15px var(--gold-primary);
         }
+        
         .service-box::after {
             content: 'CLICK FOR OPTIONS';
             position: absolute;
@@ -395,7 +408,8 @@
             transform: translateY(100%);
             transition: transform 0.3s;
         }
-        .service-box:hover::after { transform: translateY(0); }
+        
+        .service-box:hover::after, .service-box.auto-hover::after { transform: translateY(0); }
 
         /* --- MODAL --- */
         #service-modal {
@@ -434,7 +448,7 @@
         }
         .close-modal:hover { color: white; }
 
-        /* --- FOOTER & SECTIONS --- */
+        /* --- FOOTER --- */
         .barchem-footer {
             background: rgba(0, 0, 0, 0.9);
             border-top: 1px solid rgba(250, 204, 21, 0.3);
@@ -692,9 +706,7 @@
                 portalContent.style.display = 'block';
                 setTimeout(() => {
                     portalContent.style.opacity = '1';
-                    // Trigger "Konti Konti Nabubuo" Effect for Gallery
                     document.getElementById('gallery-box').classList.add('forming-active');
-                    // Remove the right-border after animation (3s)
                     setTimeout(() => {
                         document.getElementById('gallery-box').classList.add('forming-done');
                     }, 3000);
@@ -717,20 +729,17 @@
 
         async function startHistoryAnimation() {
             if(historyAnimRun) return; 
-            // Normal speed for History
             await buildFlyingText(historyContainer, historyText, 20); 
             committee.style.opacity = '1';
             document.getElementById('enter-portal-btn').classList.remove('hidden');
             historyAnimRun = true;
         }
 
-        // Generic Flying Text Builder
         async function buildFlyingText(container, text, delayMs, forceDuration = 0) {
             container.innerHTML = '';
             const words = text.split(' ');
             const allSpans = [];
 
-            // Build DOM
             for (let word of words) {
                 const wordSpan = document.createElement('span');
                 wordSpan.className = 'word-wrapper';
@@ -750,7 +759,6 @@
                 wordSpan.appendChild(document.createTextNode(' '));
             }
 
-            // Animate
             let chunkSize = 1;
             let finalDelay = delayMs;
 
@@ -781,7 +789,6 @@
             const xCenter = rect.width / 2;
             const yCenter = rect.height / 2;
             
-            // Calculate rotation (max 10 degrees)
             const rotateX = ((y - yCenter) / yCenter) * -5; 
             const rotateY = ((x - xCenter) / xCenter) * 5;
 
@@ -792,6 +799,28 @@
             missionBox.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
         });
 
+        // --- SERVICE AUTO-ROTATION LOGIC ---
+        const serviceBoxes = document.querySelectorAll('.service-box');
+        let currentServiceIndex = 0;
+        let serviceInterval;
+
+        function rotateServiceHover() {
+            serviceBoxes.forEach(box => box.classList.remove('auto-hover'));
+            if(serviceBoxes.length > 0) {
+                serviceBoxes[currentServiceIndex].classList.add('auto-hover');
+                currentServiceIndex = (currentServiceIndex + 1) % serviceBoxes.length;
+            }
+        }
+
+        function startServiceRotation() {
+            if(serviceInterval) clearInterval(serviceInterval);
+            serviceInterval = setInterval(rotateServiceHover, 2000);
+        }
+
+        function stopServiceRotation() {
+            if(serviceInterval) clearInterval(serviceInterval);
+            serviceBoxes.forEach(box => box.classList.remove('auto-hover'));
+        }
 
         // --- OBSERVER ---
         const observer = new IntersectionObserver((entries) => {
@@ -816,13 +845,12 @@
                         entry.target.classList.add('slide-visible');
                     }
                     if(id === 'values-list') {
-                        // Modified trigger for new Cyber Cards
                         const cards = entry.target.querySelectorAll('.cyber-card');
                         cards.forEach((card, idx) => {
                             setTimeout(() => {
                                 card.classList.remove('value-text-hidden');
                                 card.classList.add('value-text-visible');
-                            }, idx * 200); // Stagger effect
+                            }, idx * 200); 
                         });
                     }
                     if(id === 'services-label') {
@@ -833,6 +861,7 @@
                         entry.target.querySelectorAll('.service-box').forEach((box, index) => {
                             setTimeout(() => box.classList.add('stagger-visible'), index * 200);
                         });
+                        startServiceRotation();
                     }
                     observer.unobserve(entry.target);
                 }
@@ -845,17 +874,32 @@
                 if(el) observer.observe(el);
             });
 
+        const servicesGrid = document.getElementById('services-grid');
+        if(servicesGrid) {
+            servicesGrid.addEventListener('mouseenter', stopServiceRotation);
+            servicesGrid.addEventListener('mouseleave', startServiceRotation);
+        }
+
         document.getElementById('access-now-btn').addEventListener('click', () => navigateTo('profile'));
         document.getElementById('enter-portal-btn').addEventListener('click', () => navigateTo('company'));
 
+        // --- NEW GALLERY LOGIC (Left to Right Wipe) ---
         let slideIndex = 0;
         function startGallery() {
             const slides = document.getElementsByClassName("gallery-slide");
             if(slides.length === 0) return;
-            for (let i = 0; i < slides.length; i++) { slides[i].style.display = "none"; }
+            
+            // Remove active class from all slides
+            for (let i = 0; i < slides.length; i++) {
+                slides[i].classList.remove('active-slide');
+            }
+            
             slideIndex++;
-            if (slideIndex > slides.length) {slideIndex = 1}    
-            slides[slideIndex-1].style.display = "block";  
+            if (slideIndex > slides.length) {slideIndex = 1}
+            
+            // Add active class to current slide (triggers wipe)
+            slides[slideIndex-1].classList.add('active-slide');
+            
             setTimeout(startGallery, 4000); 
         }
 
