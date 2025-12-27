@@ -194,10 +194,7 @@
             transition: text-shadow 1s ease;
         }
 
-        /* ------------------------------------------------------------------
-           UPDATED HOLOGRAM GALLERY: LEFT TO RIGHT WIPE
-           ------------------------------------------------------------------ 
-        */
+        /* --- HOLOGRAM GALLERY --- */
         .portal-wrapper {
             position: relative;
             width: 100%;
@@ -207,19 +204,16 @@
 
         .gallery-container {
             width: 100%;
-            /* Responsive Height for PC and Mobile */
             height: clamp(250px, 60vh, 500px);
             background: #000;
-            position: relative; /* Essential for absolute positioning of slides */
+            position: relative; 
             overflow: hidden;
             border: 1px solid #333;
-            /* Container Initial Reveal State */
             clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
             border-right: 2px solid transparent; 
             transition: clip-path 2s ease-out, border-right-color 0.2s;
         }
 
-        /* Container Reveal Animation Classes */
         .gallery-container.forming-active {
             clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
             border-right: 3px solid var(--holo-cyan);
@@ -230,36 +224,33 @@
             border: 1px solid var(--holo-cyan);
         }
 
-        /* Slide Styles */
         .gallery-slide {
-            position: absolute; /* Stack slides on top of each other */
+            position: absolute; 
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            opacity: 0; /* Hidden by default */
+            opacity: 0; 
             z-index: 0;
-            background: #000; /* Prevent transparency overlap */
+            background: #000; 
         }
 
-        /* The Active Slide: Triggers Left-to-Right Wipe */
         .gallery-slide.active-slide {
             opacity: 1;
             z-index: 10;
-            /* The Wipe Animation */
             animation: holoWipeLeftRight 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
         }
 
         .gallery-slide img, .gallery-slide video {
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Ensures image fits within box without distortion */
+            object-fit: contain;
         }
 
         @keyframes holoWipeLeftRight {
             0% {
                 clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
-                filter: brightness(2) contrast(1.5); /* Bright flash at start */
+                filter: brightness(2) contrast(1.5); 
             }
             50% {
                 filter: brightness(1) contrast(1);
@@ -268,8 +259,6 @@
                 clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
             }
         }
-
-        /* ------------------------------------------------------------------ */
 
         /* --- GENERIC ANIMATIONS --- */
         .slide-hidden {
@@ -282,7 +271,7 @@
             transform: translateX(0);
         }
 
-        /* --- MISSION SECTION (Compact) --- */
+        /* --- MISSION SECTION --- */
         #mission-container {
             position: relative;
             transform-style: preserve-3d;
@@ -335,7 +324,7 @@
             100% { left: 150%; }
         }
 
-        /* --- CORE VALUES --- */
+        /* --- CORE VALUES (UPDATED ANIMATION) --- */
         .cyber-card {
             position: relative;
             background: rgba(255, 255, 255, 0.02);
@@ -343,7 +332,8 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
             padding: 20px 25px;
             margin-bottom: 15px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Default transition for hovering */
+            transition: background 0.4s, border 0.4s, transform 0.4s;
             cursor: default;
             clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
         }
@@ -363,14 +353,28 @@
             margin-bottom: 4px;
         }
 
-        .value-text-hidden {
+        /* NEW ANIMATION CLASSES FOR SLIDING 
+           Note: transition property is set here for the sliding motion
+        */
+        
+        /* State 1: Hidden to the LEFT (for 1st and 3rd items) */
+        .cv-slide-left {
             opacity: 0;
-            transform: perspective(600px) rotateX(-20deg) translateY(20px);
-            transition: all 0.8s ease;
+            transform: translateX(-150%); /* Push far left off screen */
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        .value-text-visible {
+
+        /* State 2: Hidden to the RIGHT (for 2nd and 4th items) */
+        .cv-slide-right {
+            opacity: 0;
+            transform: translateX(150%); /* Push far right off screen */
+            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        /* State 3: VISIBLE (Centered) */
+        .cv-active {
             opacity: 1;
-            transform: perspective(600px) rotateX(0) translateY(0);
+            transform: translateX(0);
         }
 
         /* --- SERVICES (Auto Hover) --- */
@@ -544,19 +548,19 @@
             <div class="mb-16" id="values-section">
                 <h2 id="values-label" class="slide-hidden font-['Cinzel'] text-yellow-500 text-3xl border-b-2 border-yellow-900 inline-block mb-8">CORE VALUES</h2>
                 <div class="space-y-4" id="values-list">
-                    <div class="cyber-card value-text-hidden">
+                    <div class="cyber-card">
                         <div><strong>Employees:</strong></div>
                         <span class="text-sm md:text-base">The source of our success. We communicate openly, treat each other with respect, and promote teamwork and personal growth.</span>
                     </div>
-                    <div class="cyber-card value-text-hidden">
+                    <div class="cyber-card">
                         <div><strong>Customers:</strong></div>
                         <span class="text-sm md:text-base">Receive our strongest commitment to quality products and superior service.</span>
                     </div>
-                    <div class="cyber-card value-text-hidden">
+                    <div class="cyber-card">
                         <div><strong>Products:</strong></div>
                         <span class="text-sm md:text-base">Built on innovative technology and continuous improvement.</span>
                     </div>
-                    <div class="cyber-card value-text-hidden">
+                    <div class="cyber-card">
                         <div><strong>Conduct:</strong></div>
                         <span class="text-sm md:text-base">A deep concern for human safety and environmental stewardship, embracing the highest ethical standards.</span>
                     </div>
@@ -822,7 +826,7 @@
             serviceBoxes.forEach(box => box.classList.remove('auto-hover'));
         }
 
-        // --- OBSERVER ---
+        // --- GENERIC OBSERVER (Run Once Elements) ---
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -844,15 +848,7 @@
                         entry.target.classList.remove('slide-hidden');
                         entry.target.classList.add('slide-visible');
                     }
-                    if(id === 'values-list') {
-                        const cards = entry.target.querySelectorAll('.cyber-card');
-                        cards.forEach((card, idx) => {
-                            setTimeout(() => {
-                                card.classList.remove('value-text-hidden');
-                                card.classList.add('value-text-visible');
-                            }, idx * 200); 
-                        });
-                    }
+                    // NOTE: 'values-list' removed from here to use the specific toggling observer below
                     if(id === 'services-label') {
                         entry.target.classList.remove('slide-hidden');
                         entry.target.classList.add('slide-visible');
@@ -868,11 +864,52 @@
             });
         }, { threshold: 0.2 });
 
-        ['about-label', 'about-section', 'mission-container', 'values-label', 'values-list', 'services-label', 'services-grid']
+        ['about-label', 'about-section', 'mission-container', 'values-label', 'services-label', 'services-grid']
             .forEach(id => {
                 const el = document.getElementById(id);
                 if(el) observer.observe(el);
             });
+
+        // --- SPECIFIC OBSERVER FOR CORE VALUES (Alternating + Toggle on Scroll) ---
+        const valuesList = document.getElementById('values-list');
+        if(valuesList) {
+            const valueCards = valuesList.querySelectorAll('.cyber-card');
+            
+            // 1. Initialize direction classes (Even: Left, Odd: Right)
+            valueCards.forEach((card, index) => {
+                // Remove existing generic hidden classes if any
+                card.classList.remove('value-text-hidden', 'value-text-visible');
+                
+                if(index % 2 === 0) {
+                    card.classList.add('cv-slide-left');
+                } else {
+                    card.classList.add('cv-slide-right');
+                }
+            });
+
+            // 2. Create Re-triggerable Observer
+            const valuesObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const cards = entry.target.querySelectorAll('.cyber-card');
+                    
+                    if(entry.isIntersecting) {
+                        // Slide IN with stagger
+                        cards.forEach((card, index) => {
+                            setTimeout(() => {
+                                card.classList.add('cv-active');
+                            }, index * 200); // 200ms stagger delay
+                        });
+                    } else {
+                        // Slide OUT (Detach) immediately when section leaves view
+                        cards.forEach(card => {
+                            card.classList.remove('cv-active');
+                        });
+                    }
+                });
+            }, { threshold: 0.1 }); // Trigger when 10% of the list is visible
+
+            valuesObserver.observe(valuesList);
+        }
 
         const servicesGrid = document.getElementById('services-grid');
         if(servicesGrid) {
