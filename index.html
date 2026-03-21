@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Orbitron:wght@400;700;900&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --matrix-green: #00ff41;
@@ -332,7 +333,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
             padding: 20px 25px;
             margin-bottom: 15px;
-            /* Default transition for hovering */
             transition: background 0.4s, border 0.4s, transform 0.4s;
             cursor: default;
             clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
@@ -352,22 +352,18 @@
             display: inline-block;
             margin-bottom: 4px;
         }
-
-        /* NEW ANIMATION CLASSES FOR SLIDING 
-           Note: transition property is set here for the sliding motion
-        */
         
         /* State 1: Hidden to the LEFT (for 1st and 3rd items) */
         .cv-slide-left {
             opacity: 0;
-            transform: translateX(-150%); /* Push far left off screen */
+            transform: translateX(-150%); 
             transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         /* State 2: Hidden to the RIGHT (for 2nd and 4th items) */
         .cv-slide-right {
             opacity: 0;
-            transform: translateX(150%); /* Push far right off screen */
+            transform: translateX(150%); 
             transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
@@ -662,6 +658,38 @@
     </template>
 
     <script>
+        // --- SAFE SUPABASE INITIALIZATION ---
+        let supabaseClient = null;
+        try {
+            const supabaseUrl = 'https://iacumukcjnsbhdvkngfq.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhY3VtdWtjam5zYmhkdmtuZ2ZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwODY1MjIsImV4cCI6MjA4OTY2MjUyMn0.adY9q_L2yK2uBqPtwaV9-6OeBMsU6wPNXgn3pYQXEVc';
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+            }
+        } catch (e) {
+            console.warn("Supabase tracking blocked by local browser settings. Visuals will load normally.");
+        }
+
+        async function trackVisitor() {
+            if (!supabaseClient) return; // Skip tracking safely if it failed to load locally
+            try {
+                const { error } = await supabaseClient
+                    .from('visitors')
+                    .insert([
+                        { 
+                            page_path: window.location.pathname, 
+                            user_agent: navigator.userAgent 
+                        }
+                    ]);
+                if (error) console.log('Tracking error:', error);
+            } catch (err) {
+                console.log('Error initializing tracker:', err);
+            }
+        }
+        
+        // Track the visitor immediately when the script runs
+        window.addEventListener('load', trackVisitor);
+
         // --- MATRIX ENGINE ---
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
@@ -895,11 +923,8 @@
         if(valuesList) {
             const valueCards = valuesList.querySelectorAll('.cyber-card');
             
-            // 1. Initialize direction classes (Even: Left, Odd: Right)
             valueCards.forEach((card, index) => {
-                // Remove existing generic hidden classes if any
                 card.classList.remove('value-text-hidden', 'value-text-visible');
-                
                 if(index % 2 === 0) {
                     card.classList.add('cv-slide-left');
                 } else {
@@ -907,26 +932,22 @@
                 }
             });
 
-            // 2. Create Re-triggerable Observer
             const valuesObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     const cards = entry.target.querySelectorAll('.cyber-card');
-                    
                     if(entry.isIntersecting) {
-                        // Slide IN with stagger
                         cards.forEach((card, index) => {
                             setTimeout(() => {
                                 card.classList.add('cv-active');
-                            }, index * 200); // 200ms stagger delay
+                            }, index * 200);
                         });
                     } else {
-                        // Slide OUT (Detach) immediately when section leaves view
                         cards.forEach(card => {
                             card.classList.remove('cv-active');
                         });
                     }
                 });
-            }, { threshold: 0.1 }); // Trigger when 10% of the list is visible
+            }, { threshold: 0.1 });
 
             valuesObserver.observe(valuesList);
         }
@@ -946,17 +967,13 @@
             const slides = document.getElementsByClassName("gallery-slide");
             if(slides.length === 0) return;
             
-            // Remove active class from all slides
             for (let i = 0; i < slides.length; i++) {
                 slides[i].classList.remove('active-slide');
             }
             
             slideIndex++;
             if (slideIndex > slides.length) {slideIndex = 1}
-            
-            // Add active class to current slide (triggers wipe)
             slides[slideIndex-1].classList.add('active-slide');
-            
             setTimeout(startGallery, 4000); 
         }
 
@@ -982,7 +999,6 @@
         const shareMenu = document.getElementById('share-menu');
         let shareMenuOpen = false;
 
-        // Toggle the menu open and close
         shareToggleBtn.addEventListener('click', () => {
             shareMenuOpen = !shareMenuOpen;
             if (shareMenuOpen) {
@@ -998,34 +1014,31 @@
             }
         });
 
-        // Hide menu if user clicks outside of it
         document.addEventListener('click', (event) => {
             if (shareMenuOpen && !shareToggleBtn.contains(event.target) && !shareMenu.contains(event.target)) {
                 shareToggleBtn.click();
             }
         });
 
-        // Current Page URL and Title
         const getSiteUrl = () => encodeURIComponent(window.location.href);
         const getSiteTitle = () => encodeURIComponent(document.title);
 
         function shareFacebook(e) {
             e.preventDefault();
             window.open(`https://www.facebook.com/sharer/sharer.php?u=${getSiteUrl()}`, 'facebook-share', 'width=580,height=296');
-            shareToggleBtn.click(); // Close menu
+            shareToggleBtn.click(); 
         }
 
         function shareMessenger(e) {
             e.preventDefault();
-            // Opens the native Messenger app on mobile
             window.open(`fb-messenger://share/?link=${getSiteUrl()}`, '_blank');
-            shareToggleBtn.click(); // Close menu
+            shareToggleBtn.click(); 
         }
 
         function shareEmail(e) {
             e.preventDefault();
             window.location.href = `mailto:?subject=Check out ${getSiteTitle()}&body=I found this interesting, take a look: ${getSiteUrl()}`;
-            shareToggleBtn.click(); // Close menu
+            shareToggleBtn.click(); 
         }
     </script>
 </body>
