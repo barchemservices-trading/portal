@@ -612,6 +612,27 @@
         </div>
     </div>
 
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        <div id="share-menu" class="hidden flex-col gap-4 mb-3 bg-black/90 border border-yellow-500/50 p-4 rounded shadow-lg shadow-black transform transition-all opacity-0 translate-y-2 min-w-[140px]">
+            <a href="#" onclick="shareFacebook(event)" class="text-gray-300 hover:text-yellow-500 font-bold text-sm flex items-center gap-3 transition-colors">
+                <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                Facebook
+            </a>
+            <a href="#" onclick="shareMessenger(event)" class="text-gray-300 hover:text-yellow-500 font-bold text-sm flex items-center gap-3 transition-colors">
+                <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.145 2 11.26c0 2.923 1.543 5.503 3.936 7.152v3.315l3.593-1.975c1.455.405 2.98.618 4.471.618 5.523 0 10-4.145 10-9.26S17.523 2 12 2zm1.082 12.55-2.768-2.96-5.408 2.96 5.952-6.31 2.82 2.95 5.35-2.95-5.948 6.31z"/></svg>
+                Messenger
+            </a>
+            <a href="#" onclick="shareEmail(event)" class="text-gray-300 hover:text-yellow-500 font-bold text-sm flex items-center gap-3 transition-colors">
+                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                Email
+            </a>
+        </div>
+
+        <button id="share-toggle-btn" class="btn-gold flex items-center justify-center !p-3 !rounded-full shadow-lg hover:scale-105 transition-transform">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+        </button>
+    </div>
+
     <template id="footer-template">
         <footer class="barchem-footer">
             <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -848,7 +869,6 @@
                         entry.target.classList.remove('slide-hidden');
                         entry.target.classList.add('slide-visible');
                     }
-                    // NOTE: 'values-list' removed from here to use the specific toggling observer below
                     if(id === 'services-label') {
                         entry.target.classList.remove('slide-hidden');
                         entry.target.classList.add('slide-visible');
@@ -956,6 +976,57 @@
             columns = width / fontSize;
             drops = Array(Math.floor(columns)).fill(1);
         });
+
+        // --- SHARE MENU LOGIC ---
+        const shareToggleBtn = document.getElementById('share-toggle-btn');
+        const shareMenu = document.getElementById('share-menu');
+        let shareMenuOpen = false;
+
+        // Toggle the menu open and close
+        shareToggleBtn.addEventListener('click', () => {
+            shareMenuOpen = !shareMenuOpen;
+            if (shareMenuOpen) {
+                shareMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    shareMenu.classList.remove('opacity-0', 'translate-y-2');
+                    shareMenu.classList.add('opacity-100', 'translate-y-0');
+                }, 10);
+            } else {
+                shareMenu.classList.remove('opacity-100', 'translate-y-0');
+                shareMenu.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => { shareMenu.classList.add('hidden'); }, 200);
+            }
+        });
+
+        // Hide menu if user clicks outside of it
+        document.addEventListener('click', (event) => {
+            if (shareMenuOpen && !shareToggleBtn.contains(event.target) && !shareMenu.contains(event.target)) {
+                shareToggleBtn.click();
+            }
+        });
+
+        // Current Page URL and Title
+        const getSiteUrl = () => encodeURIComponent(window.location.href);
+        const getSiteTitle = () => encodeURIComponent(document.title);
+
+        function shareFacebook(e) {
+            e.preventDefault();
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${getSiteUrl()}`, 'facebook-share', 'width=580,height=296');
+            shareToggleBtn.click(); // Close menu
+        }
+
+        function shareMessenger(e) {
+            e.preventDefault();
+            // Opens the native Messenger app on mobile
+            window.open(`fb-messenger://share/?link=${getSiteUrl()}`, '_blank');
+            shareToggleBtn.click(); // Close menu
+        }
+
+        function shareEmail(e) {
+            e.preventDefault();
+            window.location.href = `mailto:?subject=Check out ${getSiteTitle()}&body=I found this interesting, take a look: ${getSiteUrl()}`;
+            shareToggleBtn.click(); // Close menu
+        }
     </script>
 </body>
 </html>
