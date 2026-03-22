@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barchem | Trading & Services</title>
+
+    <meta property="og:title" content="Barchem Trading and Services" />
+    <meta property="og:description" content="Delivering innovative technology and superior service in Pest Control, Construction, and General Trading." />
+    <meta property="og:type" content="website" />
+    
+    <meta property="og:url" content="https://barchemservices-trading.github.io/portal/" />
+    
+    <meta property="og:image" content="https://barchemservices-trading.github.io/portal/barchem12.jpg" />
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Orbitron:wght@400;700;900&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -673,12 +682,20 @@
         async function trackVisitor() {
             if (!supabaseClient) return; // Skip tracking safely if it failed to load locally
             try {
+                // Get the referrer (where they came from), or default to Direct
+                let trafficSource = document.referrer;
+                if (!trafficSource || trafficSource === '') {
+                    trafficSource = 'Direct Traffic';
+                }
+
                 const { error } = await supabaseClient
                     .from('visitors')
                     .insert([
                         { 
+                            site_name: 'Barchem Trading', 
                             page_path: window.location.pathname, 
-                            user_agent: navigator.userAgent 
+                            user_agent: navigator.userAgent,
+                            referrer: trafficSource // Capture the source
                         }
                     ]);
                 if (error) console.log('Tracking error:', error);
