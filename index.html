@@ -1,314 +1,331 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barchem | Trading & Services</title>
+    <title>Barchem | Trading & Services - Executive Portal</title>
 
     <meta property="og:title" content="Barchem Trading and Services" />
-    <meta property="og:description" content="Delivering innovative technology and superior service in Pest Control, Construction, and General Trading." />
+    <meta property="og:description" content="Pioneer in Specialized Pest Control, Environmental Biocides, and $50B Mega Infrastructure Development." />
     <meta property="og:type" content="website" />
-    
     <meta property="og:url" content="https://barchemservices-trading.github.io/portal/" />
-    
-    <meta property="og:image" content="https://barchemservices-trading.github.io/portal/barchem12.jpg" />
+    <meta property="og:image" content="https://barchemservices-trading.github.io/portal/barchem2.jpg" />
 
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Orbitron:wght@400;700;900&family=Lora:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            gold: '#facc15',
+                            goldDark: '#854d0e',
+                            cyan: '#00f3ff',
+                            emerald: '#10b981',
+                            void: '#030712',
+                            card: 'rgba(15, 23, 42, 0.75)',
+                            border: 'rgba(250, 204, 21, 0.25)'
+                        }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        cinzel: ['Cinzel', 'serif'],
+                        lora: ['Lora', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        syne: ['Syne', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=JetBrains+Mono:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Orbitron:wght@500;700;900&family=Syne:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
-            --matrix-green: #00ff41;
             --gold-primary: #facc15;
-            --gold-dark: #846006;
-            --dark-void: #050505;
+            --gold-glow: rgba(250, 204, 21, 0.4);
             --holo-cyan: #00f3ff;
+            --cyan-glow: rgba(0, 243, 255, 0.35);
+            --matrix-green: #10b981;
+            --void-bg: #030712;
         }
 
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
-            background-color: var(--dark-void);
-            color: white;
-            font-family: 'Orbitron', sans-serif;
+            background-color: var(--void-bg);
+            color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
             overflow-x: hidden;
             scroll-behavior: smooth;
+            selection-background-color: var(--gold-primary);
+            selection-color: #000;
         }
 
-        /* --- MATRIX BACKGROUND --- */
+        ::selection {
+            background: #facc15;
+            color: #000;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030712;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+            border: 1px solid rgba(250, 204, 21, 0.2);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold-primary);
+        }
+
+        /* Tactical Canvas & Vignette */
         #matrix-canvas {
             position: fixed;
             top: 0;
             left: 0;
+            width: 100vw;
+            height: 100vh;
             z-index: 1;
-            opacity: 0.4;
+            opacity: 0.32;
             pointer-events: none;
         }
 
-        .vignette {
+        .ambient-grid {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.95) 100%);
+            inset: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            mask-image: radial-gradient(circle at center, black 40%, transparent 95%);
             z-index: 2;
             pointer-events: none;
         }
 
-        /* --- TYPOGRAPHY --- */
-        .logo-text {
+        .vignette-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 30%, rgba(3, 7, 18, 0.85) 75%, rgba(3, 7, 18, 0.98) 100%);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        /* Sci-Fi Glow & Typography */
+        .cyber-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .luxury-font {
             font-family: 'Cinzel', serif;
-            font-size: clamp(2rem, 8vw, 5rem); 
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: clamp(4px, 2vw, 12px);
-            background: linear-gradient(to bottom, #fff, var(--gold-primary));
+        }
+        .data-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .text-glow-gold {
+            text-shadow: 0 0 15px rgba(250, 204, 21, 0.6), 0 0 30px rgba(250, 204, 21, 0.2);
+        }
+        .text-glow-cyan {
+            text-shadow: 0 0 15px rgba(0, 243, 255, 0.6), 0 0 30px rgba(0, 243, 255, 0.2);
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #ffffff 0%, #fef08a 35%, #facc15 65%, #ca8a04 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-align: center;
         }
 
-        .btn-gold {
-            background: var(--gold-primary);
-            color: #000;
-            font-weight: 900;
-            padding: 12px 30px;
-            font-size: 0.85rem;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            box-shadow: 0 4px 0 var(--gold-dark);
-            transition: all 0.2s;
-            z-index: 30;
-            border: none;
+        .titanium-gradient-text {
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 50%, #e2e8f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .btn-gold:active {
-            transform: translateY(3px);
-            box-shadow: 0 0 0 var(--gold-dark);
-        }
-
-        /* --- STICKY MENU --- */
-        #nav-toggle {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 100;
-            background: rgba(0,0,0,0.8);
-            border: 1px solid var(--gold-primary);
-            color: var(--gold-primary);
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1.5rem;
-            box-shadow: 0 0 10px var(--gold-dark);
-            transition: all 0.3s;
-        }
-        #nav-toggle:hover {
-            background: var(--gold-primary);
-            color: black;
-            box-shadow: 0 0 20px var(--gold-primary);
-        }
-
-        /* --- DASHBOARD SIDEBAR --- */
-        #dashboard-sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: 280px;
-            background: rgba(5, 5, 5, 0.98);
-            border-right: 2px solid var(--gold-primary);
-            z-index: 200;
-            transform: translateX(-100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            padding-top: 20px;
-            box-shadow: 10px 0 50px rgba(0,0,0,0.8);
-        }
-
-        #dashboard-sidebar.active {
-            transform: translateX(0);
-        }
-
-        .close-sidebar-btn {
-            align-self: flex-end;
-            margin-right: 20px;
-            margin-bottom: 20px;
-            background: transparent;
-            border: 1px solid #555;
-            color: #fff;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.3s;
-        }
-        .close-sidebar-btn:hover {
-            border-color: var(--gold-primary);
-            color: var(--gold-primary);
-            transform: rotate(90deg);
-        }
-
-        .nav-item {
-            padding: 20px 30px;
-            color: #ccc;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            cursor: pointer;
-            border-bottom: 1px solid rgba(250, 204, 21, 0.1);
-            transition: all 0.3s;
-            font-size: 0.9rem;
-        }
-        .nav-item:hover { color: var(--gold-primary); background: rgba(250, 204, 21, 0.05); padding-left: 40px; }
-        .nav-item.active-page { color: var(--gold-primary); border-left: 4px solid var(--gold-primary); }
-
-        /* --- ANIMATED TEXT --- */
-        .animated-text-container {
-            font-family: 'Lora', serif;
-            font-size: clamp(1rem, 2.5vw, 1.25rem);
-            line-height: 1.7;
-            text-align: justify;
-            color: white;
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 15px;
-            perspective: 1000px;
-        }
-
-        .word-wrapper { display: inline-block; white-space: nowrap; margin-right: 6px; }
-
-        .letter {
-            display: inline-block;
-            opacity: 0;
-            color: white; 
-            transform: translate3d(var(--x), var(--y), var(--z)) rotate(var(--r));
-            transition: all 0.7s cubic-bezier(0.1, 0.8, 0.2, 1); 
-        }
-
-        .letter.assembled { opacity: 1; transform: translate3d(0, 0, 0) rotate(0); }
-        .letter.gold-spark { 
-            text-shadow: 0 0 8px var(--gold-primary); 
-            transition: text-shadow 1s ease;
-        }
-
-        /* --- HOLOGRAM GALLERY --- */
-        .portal-wrapper {
+        /* Tactical HUD Corner Brackets */
+        .hud-bracket {
             position: relative;
-            width: 100%;
-            max-width: 1000px;
-            margin: 20px auto;
+        }
+        .hud-bracket::before, .hud-bracket::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-color: var(--gold-primary);
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .hud-bracket::before {
+            top: -2px;
+            left: -2px;
+            border-top: 2px solid var(--gold-primary);
+            border-left: 2px solid var(--gold-primary);
+        }
+        .hud-bracket::after {
+            bottom: -2px;
+            right: -2px;
+            border-bottom: 2px solid var(--gold-primary);
+            border-right: 2px solid var(--gold-primary);
+        }
+        .hud-bracket:hover::before, .hud-bracket:hover::after {
+            width: 16px;
+            height: 16px;
+            border-color: var(--holo-cyan);
+            filter: drop-shadow(0 0 6px var(--holo-cyan));
         }
 
-        .gallery-container {
-            width: 100%;
-            height: clamp(250px, 60vh, 500px);
-            background: #000;
-            position: relative; 
+        /* Tactical Glassmorphic Cards */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(250, 204, 21, 0.18);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8), inset 0 0 15px rgba(250, 204, 21, 0.03);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass-panel:hover {
+            border-color: rgba(250, 204, 21, 0.5);
+            box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.9), 0 0 25px rgba(250, 204, 21, 0.15);
+        }
+
+        /* Maangas Tactical Buttons */
+        .btn-cyber-gold {
+            position: relative;
+            background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 14px 32px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
             overflow: hidden;
-            border: 1px solid #333;
-            clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
-            border-right: 2px solid transparent; 
-            transition: clip-path 2s ease-out, border-right-color 0.2s;
+            box-shadow: 0 0 20px rgba(250, 204, 21, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-
-        .gallery-container.forming-active {
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-            border-right: 3px solid var(--holo-cyan);
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
-        }
-        .gallery-container.forming-done {
-            border-right: 1px solid #333;
-            border: 1px solid var(--holo-cyan);
-        }
-
-        .gallery-slide {
-            position: absolute; 
+        .btn-cyber-gold::before {
+            content: '';
+            position: absolute;
             top: 0;
-            left: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
-            opacity: 0; 
-            z-index: 0;
-            background: #000; 
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+            transition: left 0.6s ease;
+        }
+        .btn-cyber-gold:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 30px rgba(250, 204, 21, 0.7);
+        }
+        .btn-cyber-gold:hover::before {
+            left: 100%;
+        }
+        .btn-cyber-gold:active {
+            transform: translateY(1px) scale(0.98);
         }
 
-        .gallery-slide.active-slide {
-            opacity: 1;
-            z-index: 10;
-            animation: holoWipeLeftRight 1.5s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        .btn-cyber-outline {
+            position: relative;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            color: #f3f4f6;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 14px 30px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 243, 255, 0.4);
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-cyber-outline:hover {
+            border-color: var(--holo-cyan);
+            color: var(--holo-cyan);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.4);
+            transform: translateY(-2px);
         }
 
-        .gallery-slide img, .gallery-slide video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        /* Rotating Holographic Orbital Rings */
+        .orbital-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .orbital-ring {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .orbital-ring-1 {
+            width: 220px;
+            height: 220px;
+            border: 1px dashed rgba(250, 204, 21, 0.4);
+            animation: spinClockwise 25s linear infinite;
+        }
+        .orbital-ring-2 {
+            width: 260px;
+            height: 260px;
+            border: 1px solid rgba(0, 243, 255, 0.25);
+            border-top-color: var(--holo-cyan);
+            animation: spinCounter 18s linear infinite;
+        }
+        .orbital-ring-3 {
+            width: 300px;
+            height: 300px;
+            border: 1px dotted rgba(255, 255, 255, 0.15);
+            animation: spinClockwise 40s linear infinite;
         }
 
-        @keyframes holoWipeLeftRight {
-            0% {
-                clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
-                filter: brightness(2) contrast(1.5); 
-            }
-            50% {
-                filter: brightness(1) contrast(1);
-            }
-            100% {
-                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-            }
+        @keyframes spinClockwise {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes spinCounter {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
         }
 
-        /* --- GENERIC ANIMATIONS --- */
-        .slide-hidden {
-            opacity: 0;
-            transform: translateX(-100px);
-            transition: all 1.2s ease-out;
-        }
-        .slide-visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        /* --- MISSION SECTION --- */
+        /* 3D Mission Scanner & Tilt */
         #mission-container {
             position: relative;
             transform-style: preserve-3d;
-            transform: perspective(1000px);
-            background: linear-gradient(145deg, rgba(10,10,10,0.9), rgba(0,0,0,0.95));
-            border: 1px solid rgba(250, 204, 21, 0.3);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(3, 7, 18, 0.95) 100%);
+            border: 1px solid rgba(250, 204, 21, 0.35);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
             overflow: hidden;
-            transition: transform 0.1s ease-out, box-shadow 0.3s ease;
+            transition: transform 0.15s ease-out, border-color 0.3s ease;
         }
-
-        #mission-container .mission-title {
-            font-family: 'Cinzel', serif;
-            color: var(--gold-primary);
-            font-size: clamp(1.2rem, 4vw, 2rem); 
-            margin-bottom: 0.8rem;
-            letter-spacing: 0.2rem;
+        #mission-container:hover {
+            border-color: var(--gold-primary);
         }
-
-        #mission-container .mission-quote {
-            font-size: clamp(0.85rem, 3.5vw, 1.4rem); 
-            font-style: italic;
-            color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-            line-height: 1.4;
-        }
-
         #mission-container::after {
             content: '';
             position: absolute;
@@ -316,358 +333,999 @@
             left: -150%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent 0%, rgba(250, 204, 21, 0.1) 45%, rgba(250, 204, 21, 0.4) 50%, rgba(250, 204, 21, 0.1) 55%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, rgba(250, 204, 21, 0.05) 40%, rgba(250, 204, 21, 0.3) 50%, rgba(250, 204, 21, 0.05) 60%, transparent 100%);
             transform: skewX(-25deg);
-            animation: holo-scan 4s infinite linear;
+            animation: holo-laser 5s infinite cubic-bezier(0.4, 0, 0.2, 1);
             pointer-events: none;
             z-index: 1;
         }
-
-        #mission-container .mission-content {
-            position: relative;
-            z-index: 2;
-            transform: translateZ(20px);
-        }
-
-        @keyframes holo-scan {
+        @keyframes holo-laser {
             0% { left: -150%; }
-            100% { left: 150%; }
+            50%, 100% { left: 150%; }
         }
 
-        /* --- CORE VALUES (UPDATED ANIMATION) --- */
+        /* Kinetic Flying Text */
+        .animated-text-container {
+            font-family: 'Lora', serif;
+            font-size: clamp(1rem, 2.2vw, 1.2rem);
+            line-height: 1.85;
+            text-align: justify;
+            max-width: 900px;
+            margin: 25px auto;
+            padding: 0 15px;
+            perspective: 1200px;
+        }
+        .word-wrapper {
+            display: inline-block;
+            white-space: nowrap;
+            margin-right: 6px;
+        }
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            color: #d1d5db;
+            transform: translate3d(var(--x), var(--y), var(--z)) rotate(var(--r));
+            transition: all 0.75s cubic-bezier(0.1, 0.85, 0.25, 1);
+        }
+        .letter.assembled {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) rotate(0);
+        }
+        .letter.gold-spark {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(250, 204, 21, 0.8), 0 0 20px rgba(250, 204, 21, 0.4);
+            transition: text-shadow 1s ease, color 0.5s ease;
+        }
+
+        /* Core Values & Cyber Armor Cards */
         .cyber-card {
             position: relative;
-            background: rgba(255, 255, 255, 0.02);
-            border-left: 4px solid #444; 
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding: 20px 25px;
-            margin-bottom: 15px;
-            transition: background 0.4s, border 0.4s, transform 0.4s;
-            cursor: default;
-            clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+            background: rgba(15, 23, 42, 0.6);
+            border-left: 4px solid #334155;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 22px 26px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(10px);
         }
-
         .cyber-card:hover {
-            background: linear-gradient(90deg, rgba(250, 204, 21, 0.1), transparent);
+            background: linear-gradient(90deg, rgba(250, 204, 21, 0.08) 0%, rgba(15, 23, 42, 0.9) 100%);
             border-left-color: var(--gold-primary);
-            transform: translateX(15px) scale(1.02);
-            box-shadow: -5px 5px 20px rgba(0,0,0,0.5);
+            transform: translateX(12px) scale(1.01);
+            box-shadow: -5px 10px 30px rgba(0,0,0,0.6), 0 0 20px rgba(250, 204, 21, 0.1);
         }
-
         .cyber-card strong {
             color: var(--gold-primary);
-            text-shadow: 0 0 5px rgba(250, 204, 21, 0.5);
-            font-size: 1.1em;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
             display: inline-block;
             margin-bottom: 4px;
         }
-        
-        /* State 1: Hidden to the LEFT (for 1st and 3rd items) */
+
         .cv-slide-left {
             opacity: 0;
-            transform: translateX(-150%); 
-            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            transform: translateX(-100px);
+            transition: all 0.8s cubic-bezier(0.2, 0.9, 0.3, 1);
         }
-
-        /* State 2: Hidden to the RIGHT (for 2nd and 4th items) */
         .cv-slide-right {
             opacity: 0;
-            transform: translateX(150%); 
-            transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+            transform: translateX(100px);
+            transition: all 0.8s cubic-bezier(0.2, 0.9, 0.3, 1);
         }
-
-        /* State 3: VISIBLE (Centered) */
         .cv-active {
             opacity: 1;
             transform: translateX(0);
         }
 
-        /* --- SERVICES (Auto Hover) --- */
+        /* Service Cards */
         .service-box {
-            transition: all 0.3s;
-            cursor: pointer;
             position: relative;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
             overflow: hidden;
-            opacity: 0;
-            transform: translateX(-50px);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .service-box.stagger-visible {
-            animation: slideInBox 0.8s forwards;
-        }
-        @keyframes slideInBox { to { opacity: 1; transform: translateX(0); } }
-
-        .service-box:hover, .service-box.auto-hover {
-            transform: translateY(-5px);
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--gold-primary);
-            box-shadow: 0 0 15px var(--gold-primary);
-        }
-        
         .service-box::after {
-            content: 'CLICK FOR OPTIONS';
+            content: '⚡ ACCESS DEPLOYMENT PROTOCOL ⚡';
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             background: var(--gold-primary);
-            color: black;
+            color: #000;
+            font-family: 'Orbitron', sans-serif;
             font-size: 0.7rem;
             text-align: center;
-            font-weight: bold;
+            font-weight: 800;
+            padding: 6px 0;
+            letter-spacing: 1px;
             transform: translateY(100%);
-            transition: transform 0.3s;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        
-        .service-box:hover::after, .service-box.auto-hover::after { transform: translateY(0); }
+        .service-box:hover, .service-box.auto-hover {
+            transform: translateY(-6px);
+            background: rgba(15, 23, 42, 0.85);
+            border-color: var(--gold-primary);
+            box-shadow: 0 12px 30px -5px rgba(0,0,0,0.8), 0 0 20px rgba(250, 204, 21, 0.25);
+        }
+        .service-box:hover::after, .service-box.auto-hover::after {
+            transform: translateY(0);
+        }
 
-        /* --- MODAL --- */
-        #service-modal {
-            display: none;
+        /* Hologram Gallery Box */
+        .portal-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1050px;
+            margin: 25px auto;
+        }
+        .gallery-container {
+            width: 100%;
+            height: clamp(280px, 60vh, 520px);
+            background: #000;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 8px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.9), 0 0 30px rgba(0, 243, 255, 0.15);
+        }
+        .gallery-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            z-index: 0;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease;
+        }
+        .gallery-slide.active-slide {
+            opacity: 1;
+            z-index: 10;
+            animation: holoWipe 1.2s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+        }
+        .gallery-slide img, .gallery-slide video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        @keyframes holoWipe {
+            0% {
+                clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+                filter: brightness(2) contrast(1.4);
+            }
+            100% {
+                clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+                filter: brightness(1) contrast(1);
+            }
+        }
+
+        /* Sidebar Navigation */
+        #dashboard-sidebar {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 300;
-            justify-content: center;
-            align-items: center;
-            backdrop-filter: blur(5px);
+            height: 100vh;
+            width: 320px;
+            background: rgba(3, 7, 18, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(250, 204, 21, 0.3);
+            z-index: 200;
+            transform: translateX(-100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 20px 0 60px rgba(0,0,0,0.9);
         }
-        .modal-content {
-            background: #111;
-            border: 2px solid var(--gold-primary);
-            padding: 30px;
-            max-width: 90%;
-            width: 400px;
-            text-align: center;
-            border-radius: 8px;
-            position: relative;
-            box-shadow: 0 0 30px var(--gold-dark);
-            animation: popIn 0.4s ease-out;
+        #dashboard-sidebar.active {
+            transform: translateX(0);
         }
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
-        .close-modal {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            color: #666;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        .close-modal:hover { color: white; }
 
-        /* --- FOOTER --- */
-        .barchem-footer {
-            background: rgba(0, 0, 0, 0.9);
-            border-top: 1px solid rgba(250, 204, 21, 0.3);
-            padding: 40px 20px;
-            font-family: 'Orbitron', sans-serif;
-            color: #ccc;
-            margin-top: 50px;
+        /* Pulse Ring */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
         }
-        .footer-title { color: var(--gold-primary); font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 15px; font-weight: bold; }
-        #page-2, #portal-content { display: none; position: relative; z-index: 10; opacity: 0; transition: opacity 1s ease; }
+        .status-beacon {
+            animation: pulse-ring 2.5s infinite ease-in-out;
+        }
+
+        /* Floating HUD Indicator */
+        .hud-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: #9ca3af;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3px 8px;
+            border-radius: 2px;
+            background: rgba(0, 0, 0, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Toast notification */
+        #cyber-toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--gold-primary);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(250, 204, 21, 0.4);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 6px;
+            z-index: 500;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        #cyber-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
     </style>
 </head>
-<body>
+<body class="relative">
 
+    <!-- MATRIX CANVAS & AMBIENT GRIDS -->
     <canvas id="matrix-canvas"></canvas>
-    <div class="vignette"></div>
+    <div class="ambient-grid"></div>
+    <div class="vignette-overlay"></div>
 
-    <button id="nav-toggle"><i class="fas fa-bars"></i></button>
+    <!-- TOP TACTICAL TELEMETRY HUD BAR -->
+    <header class="fixed top-0 left-0 w-full z-40 bg-gray-950/80 backdrop-blur-md border-b border-yellow-500/20 px-4 py-2.5 flex items-center justify-between text-xs data-font">
+        <div class="flex items-center gap-4">
+            <button id="nav-toggle" class="flex items-center gap-2 text-yellow-400 hover:text-white px-2 py-1 rounded bg-black/40 border border-yellow-500/30 hover:border-yellow-400 transition" title="Toggle Command Menu">
+                <i class="fas fa-bars-staggered"></i>
+                <span class="hidden sm:inline cyber-font text-[11px] tracking-widest font-bold">MENU</span>
+            </button>
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 status-beacon"></span>
+                <span class="text-gray-400 font-mono hidden md:inline">SYSTEM:</span>
+                <span class="text-emerald-400 font-bold cyber-font tracking-wider">DEFENSE & TRADING SECURE</span>
+            </div>
+        </div>
 
+        <!-- Center Tagline -->
+        <div class="hidden lg:flex items-center gap-6 text-gray-400">
+            <span class="hud-tag"><i class="fas fa-shield-halved text-yellow-400"></i> SEC REG: 2002</span>
+            <span class="hud-tag"><i class="fas fa-cubes text-cyan-400"></i> CONSORTIUM: $50B INFRASTRUCTURE</span>
+        </div>
+
+        <!-- Right Side: Clock & Sound Toggle -->
+        <div class="flex items-center gap-4">
+            <div class="hidden sm:flex items-center gap-1.5 text-gray-300">
+                <i class="far fa-clock text-yellow-500 text-xs"></i>
+                <span id="live-pht-clock" class="font-mono text-yellow-400">--:--:-- PHT</span>
+            </div>
+            <button id="audio-toggle-btn" class="flex items-center gap-2 px-2.5 py-1 rounded bg-black/40 border border-cyan-500/30 text-cyan-400 hover:text-white hover:border-cyan-400 transition" title="Toggle Tactical Audio FX">
+                <i id="audio-icon" class="fas fa-volume-xmark"></i>
+                <span id="audio-label" class="hidden sm:inline cyber-font text-[10px] tracking-wider">AUDIO OFF</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- SIDEBAR COMMAND DRAWER -->
     <div id="dashboard-sidebar">
-        <button class="close-sidebar-btn" id="close-sidebar"><i class="fas fa-times"></i></button>
-        <div class="text-center mb-8">
-            <h2 class="text-yellow-500 font-bold text-2xl font-['Cinzel']">BARCHEM</h2>
-            <p class="text-xs text-gray-500 tracking-widest">DASHBOARD</p>
-        </div>
-        <div class="nav-item" onclick="navigateTo('home')">1. Introduction</div>
-        <div class="nav-item" onclick="navigateTo('profile')">2. Profile & History</div>
-        <div class="nav-item" onclick="navigateTo('company')">3. Company Portal</div>
-        <div class="mt-auto p-6 text-xs text-gray-600">System Status: <span class="text-green-500">ONLINE</span></div>
-    </div>
-
-    <div id="welcome-ui" class="relative z-10 flex flex-col items-center justify-center h-screen text-center px-6">
-        <h1 class="logo-text">Barchem</h1>
-        <h2 class="text-yellow-500 tracking-[5px] font-bold text-sm md:text-lg mb-8">TRADING AND SERVICES</h2>
-        <button id="access-now-btn" class="btn-gold">Access Now</button>
-    </div>
-
-    <div id="page-2" class="flex flex-col items-center pt-20 w-full">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png" alt="Earth" class="w-32 md:w-44 mb-6">
-        <h1 class="logo-text text-3xl md:text-5xl mb-8 px-4">Barchem Trading and Services</h1>
-        
-        <div id="history-content" class="animated-text-container" style="color: #00ff41;"></div>
-
-        <div id="committee" class="opacity-0 w-full max-w-4xl px-6 text-center mt-12 transition-opacity duration-[2000ms]">
-            <h3 class="font-['Cinzel'] text-yellow-500 text-2xl mb-8 underline decoration-gold-dark underline-offset-8">WHO WE ARE</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm md:text-base">
-                <div><strong class="text-white text-lg">Ramon M. Gallinera</strong><br><span class="text-yellow-600">Chairman</span></div>
-                <div><strong class="text-white text-lg">Emmanuel R. Barcebal</strong><br><span class="text-yellow-600">Vice Chairman / Executive Director</span></div>
-                <div><strong class="text-white text-lg">Francis J. Guingona</strong><br><span class="text-yellow-600">Member / Consultant</span></div>
-                <div><strong class="text-white text-lg">Marivi A. Beltran CPA</strong><br><span class="text-yellow-600">Finance</span></div>
-            </div>
-            <div class="mt-8 pt-6 border-t border-gray-800">
-                <span class="text-yellow-600 text-xs uppercase tracking-widest">Legal Counsel</span><br>
-                <span class="text-white text-sm">Atty. Marie Cenjidoza | Atty. Jamie Salvatierra</span>
-            </div>
-            <button id="enter-portal-btn" class="btn-gold mt-12 hidden">Enter Portal</button>
-        </div>
-        <div id="footer-p2" class="w-full"></div>
-    </div>
-
-    <div id="portal-content" class="pt-16 w-full">
-        <div class="flex flex-col items-center mb-10 px-4 text-center">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png" alt="Earth" class="w-20 mb-4">
-            <h1 class="logo-text text-2xl md:text-4xl">Barchem Trading and Services</h1>
-        </div>
-
-        <div class="portal-wrapper">
-            <div class="gallery-container" id="gallery-box">
-                <div class="gallery-slide"><video autoplay muted loop playsinline><source src="barchem1.mp4" type="video/mp4"></video></div>
-                <div class="gallery-slide"><img src="barchem2.jpg" alt="Gallery 1"></div>
-                <div class="gallery-slide"><img src="barchem3.jpg" alt="Gallery 2"></div>
-                <div class="gallery-slide"><img src="barchem4.jpg" alt="Gallery 3"></div>
-                <div class="gallery-slide"><img src="barchem5.jpg" alt="Gallery 4"></div>
-            </div>
-        </div>
-
-        <div class="max-w-5xl mx-auto px-6 font-['Lora'] text-gray-200 leading-relaxed overflow-hidden">
-            
-            <div class="my-16" id="about-section">
-                <h2 id="about-label" class="slide-hidden font-['Cinzel'] text-yellow-500 text-3xl border-b-2 border-yellow-900 inline-block mb-6">ABOUT US</h2>
-                <div id="about-text-container" class="animated-text-container" style="padding:0; margin:0; text-align: left;">
+        <div class="p-6 flex flex-col h-full">
+            <div class="flex items-center justify-between pb-6 border-b border-gray-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded bg-yellow-500/10 border border-yellow-500/40 flex items-center justify-center text-yellow-400 font-bold text-xl luxury-font">
+                        B
                     </div>
-            </div>
-
-            <div id="mission-container" class="slide-hidden mb-12 p-6 text-center rounded-lg">
-                <div class="mission-content">
-                    <h2 class="mission-title">MISSION</h2>
-                    <p class="mission-quote">"Barchem delivers innovative technology that exceeds customers’ needs."</p>
-                    <div class="w-16 h-1 bg-yellow-500 mx-auto mt-4"></div>
-                </div>
-            </div>
-
-            <div class="mb-16" id="values-section">
-                <h2 id="values-label" class="slide-hidden font-['Cinzel'] text-yellow-500 text-3xl border-b-2 border-yellow-900 inline-block mb-8">CORE VALUES</h2>
-                <div class="space-y-4" id="values-list">
-                    <div class="cyber-card">
-                        <div><strong>Employees:</strong></div>
-                        <span class="text-sm md:text-base">The source of our success. We communicate openly, treat each other with respect, and promote teamwork and personal growth.</span>
-                    </div>
-                    <div class="cyber-card">
-                        <div><strong>Customers:</strong></div>
-                        <span class="text-sm md:text-base">Receive our strongest commitment to quality products and superior service.</span>
-                    </div>
-                    <div class="cyber-card">
-                        <div><strong>Products:</strong></div>
-                        <span class="text-sm md:text-base">Built on innovative technology and continuous improvement.</span>
-                    </div>
-                    <div class="cyber-card">
-                        <div><strong>Conduct:</strong></div>
-                        <span class="text-sm md:text-base">A deep concern for human safety and environmental stewardship, embracing the highest ethical standards.</span>
+                    <div>
+                        <h2 class="text-white font-bold text-lg luxury-font tracking-widest">BARCHEM</h2>
+                        <p class="text-[10px] text-yellow-500/80 cyber-font tracking-widest">COMMAND DASHBOARD</p>
                     </div>
                 </div>
-            </div>
-
-            <div class="mb-16" id="services-section">
-                <h2 id="services-label" class="slide-hidden font-['Cinzel'] text-yellow-500 text-3xl border-b-2 border-yellow-900 inline-block mb-8">SERVICES</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="services-grid">
-                    <div class="service-box p-6 bg-white/5 border border-white/10" onclick="openServiceModal('General Disinfection')">
-                        <h4 class="text-yellow-500 font-bold mb-2">General Disinfection</h4>
-                        <p class="text-sm">Eliminating microbes and infectious organisms via metabolic interference.</p>
-                    </div>
-                    <div class="service-box p-6 bg-white/5 border border-white/10" onclick="openServiceModal('Termite Protection')">
-                        <h4 class="text-yellow-500 font-bold mb-2">Termite Protection</h4>
-                        <p class="text-sm">Protecting high-value property investments from structural destruction.</p>
-                    </div>
-                    <div class="service-box p-6 bg-white/5 border border-white/10" onclick="openServiceModal('General Pest Control')">
-                        <h4 class="text-yellow-500 font-bold mb-2">General Pest Control</h4>
-                        <p class="text-sm">Maintaining disease-free environments through pest reduction programs.</p>
-                    </div>
-                    <div class="service-box p-6 bg-white/5 border border-white/10" onclick="openServiceModal('General Construction')">
-                        <h4 class="text-yellow-500 font-bold mb-2">General Construction</h4>
-                        <p class="text-sm">Quality construction, repairing, and sustainable development of buildings.</p>
-                    </div>
-                </div>
-                <p class="mt-8 text-center text-sm italic text-gray-400">Also providing: Roofing Supplies, Safety Devices, Office Supplies, and Shelving Storage.</p>
-            </div>
-        </div>
-        <div id="footer-p3" class="w-full"></div>
-    </div>
-
-    <div id="service-modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeServiceModal()">&times;</span>
-            <h3 id="modal-service-title" class="text-yellow-500 font-['Cinzel'] text-xl mb-6">Service Name</h3>
-            <p class="text-sm text-gray-400 mb-8">Please choose an option to contact us regarding this service.</p>
-            <div class="flex flex-col gap-4">
-                <a href="https://m.me/100054516412008" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded transition">
-                    <i class="fab fa-facebook-messenger mr-2"></i> Send Message
-                </a>
-                <button onclick="revealNumber()" class="bg-yellow-600 hover:bg-yellow-700 text-black font-bold py-3 px-4 rounded transition">
-                    <i class="fas fa-phone mr-2"></i> Call Us
+                <button id="close-sidebar" class="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-yellow-400 hover:text-yellow-400 flex items-center justify-center transition">
+                    <i class="fas fa-times"></i>
                 </button>
-                <div id="contact-number-display" class="hidden text-xl text-white font-bold mt-2 animate-bounce">
-                    <a href="tel:09954036719" class="text-white hover:text-yellow-400">0995-403-6719</a>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="py-6 space-y-2 flex-1">
+                <div class="text-[11px] text-gray-500 tracking-widest cyber-font mb-3 uppercase px-3">Operational Directives</div>
+                
+                <button onclick="navigateTo('home')" class="nav-item w-full text-left px-4 py-3.5 rounded-lg flex items-center gap-3.5 text-gray-300 hover:text-yellow-400 hover:bg-yellow-500/10 transition border border-transparent hover:border-yellow-500/30">
+                    <i class="fas fa-terminal text-yellow-500 w-5 text-center"></i>
+                    <div>
+                        <div class="cyber-font text-xs tracking-wider font-bold">1. WELCOME COMMAND</div>
+                        <div class="text-[10px] text-gray-500">Overview & Hero Terminal</div>
+                    </div>
+                </button>
+
+                <button onclick="navigateTo('profile')" class="nav-item w-full text-left px-4 py-3.5 rounded-lg flex items-center gap-3.5 text-gray-300 hover:text-yellow-400 hover:bg-yellow-500/10 transition border border-transparent hover:border-yellow-500/30">
+                    <i class="fas fa-file-contract text-cyan-400 w-5 text-center"></i>
+                    <div>
+                        <div class="cyber-font text-xs tracking-wider font-bold">2. CORPORATE DOSSIER</div>
+                        <div class="text-[10px] text-gray-500">History, Leadership & Timeline</div>
+                    </div>
+                </button>
+
+                <button onclick="navigateTo('company')" class="nav-item w-full text-left px-4 py-3.5 rounded-lg flex items-center gap-3.5 text-gray-300 hover:text-yellow-400 hover:bg-yellow-500/10 transition border border-transparent hover:border-yellow-500/30">
+                    <i class="fas fa-cube text-emerald-400 w-5 text-center"></i>
+                    <div>
+                        <div class="cyber-font text-xs tracking-wider font-bold">3. COMPANY PORTAL</div>
+                        <div class="text-[10px] text-gray-500">Services, Vault & Operations</div>
+                    </div>
+                </button>
+
+                <div class="pt-6 mt-6 border-t border-gray-800">
+                    <div class="text-[11px] text-gray-500 tracking-widest cyber-font mb-3 uppercase px-3">Direct Dispatch</div>
+                    <a href="tel:09954036719" class="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 hover:bg-yellow-500 hover:text-black transition">
+                        <span class="cyber-font text-xs font-bold"><i class="fas fa-phone mr-2"></i> 0995-403-6719</span>
+                        <i class="fas fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Footer in Sidebar -->
+            <div class="pt-4 border-t border-gray-800 text-[11px] text-gray-500 flex flex-col gap-1">
+                <div class="flex items-center justify-between">
+                    <span>SECURITY CLEARANCE:</span>
+                    <span class="text-emerald-400 font-bold">ALPHA-5</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span>SECTOR:</span>
+                    <span>SAN JUAN, METRO MANILA</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-        <div id="share-menu" class="hidden flex-col gap-4 mb-3 bg-black/90 border border-yellow-500/50 p-4 rounded shadow-lg shadow-black transform transition-all opacity-0 translate-y-2 min-w-[140px]">
-            <a href="#" onclick="shareFacebook(event)" class="text-gray-300 hover:text-yellow-500 font-bold text-sm flex items-center gap-3 transition-colors">
-                <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                Facebook
-            </a>
-            <a href="#" onclick="shareMessenger(event)" class="text-gray-300 hover:text-yellow-500 font-bold text-sm flex items-center gap-3 transition-colors">
-                <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.145 2 11.26c0 2.923 1.543 5.503 3.936 7.152v3.315l3.593-1.975c1.455.405 2.98.618 4.471.618 5.523 0 10-4.145 10-9.26S17.523 2 12 2zm1.082 12.55-2.768-2.96-5.408 2.96 5.952-6.31 2.82 2.95 5.35-2.95-5.948 6.31z"/></svg>
-                Messenger
-            </a>
-            <a href="#" onclick="shareEmail(event)" class="text-gray-300 hover:text-yellow-500 font-bold text-sm flex items-center gap-3 transition-colors">
-                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                Email
-            </a>
-        </div>
+    <!-- MAIN WRAPPER -->
+    <main class="relative z-10 pt-16">
 
-        <button id="share-toggle-btn" class="btn-gold flex items-center justify-center !p-3 !rounded-full shadow-lg hover:scale-105 transition-transform">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
-        </button>
+        <!-- ================= PAGE 1: WELCOME SCREEN (MAANGAS HERO) ================= -->
+        <section id="welcome-ui" class="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 py-12 text-center transition-all duration-700">
+            
+            <!-- Floating Holographic Orbital Core -->
+            <div class="orbital-wrapper mb-8 mt-4">
+                <div class="orbital-ring orbital-ring-1"></div>
+                <div class="orbital-ring orbital-ring-2"></div>
+                <div class="orbital-ring orbital-ring-3"></div>
+
+                <div class="relative w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-tr from-gray-950 via-slate-900 to-black border-2 border-yellow-500/40 shadow-[0_0_50px_rgba(250,204,21,0.25)] flex flex-col items-center justify-center p-4">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png" 
+                         alt="Global Earth Emblem" 
+                         class="w-20 h-20 md:w-24 md:h-24 object-contain animate-[pulse_4s_ease-in-out_infinite] drop-shadow-[0_0_15px_rgba(0,243,255,0.4)]">
+                    <div class="absolute bottom-2 text-[9px] cyber-font text-yellow-400 tracking-[3px] font-bold">EST. 2002</div>
+                </div>
+            </div>
+
+            <!-- Main Title & Branding -->
+            <div class="max-w-4xl mx-auto space-y-4">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs cyber-font tracking-widest uppercase">
+                    <i class="fas fa-shield-virus"></i> Industrial Defense & Sovereign Infrastructure
+                </div>
+
+                <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl luxury-font font-black tracking-wider gold-gradient-text drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]">
+                    BARCHEM
+                </h1>
+
+                <h2 class="text-sm sm:text-lg md:text-xl cyber-font tracking-[8px] sm:tracking-[12px] text-gray-300 font-bold uppercase">
+                    TRADING & SERVICES
+                </h2>
+
+                <p class="max-w-2xl mx-auto text-gray-400 text-sm sm:text-base leading-relaxed pt-2">
+                    Delivering battle-tested bio-defense, specialized pest containment, industrial safety distribution, and prime execution on multi-billion dollar national infrastructure consortiums.
+                </p>
+            </div>
+
+            <!-- Maangas CTA Action Center -->
+            <div class="mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+                <button id="access-now-btn" class="btn-cyber-gold hud-bracket group">
+                    <span>ACCESS CORPORATE DOSSIER</span>
+                    <i class="fas fa-arrow-right text-black group-hover:translate-x-1 transition-transform"></i>
+                </button>
+                <button onclick="navigateTo('company')" class="btn-cyber-outline hud-bracket group">
+                    <i class="fas fa-cube text-cyan-400"></i>
+                    <span>ENTER COMPANY PORTAL</span>
+                </button>
+                <a href="tel:09954036719" class="btn-cyber-outline !border-yellow-500/40 hover:!border-yellow-400 !text-yellow-400 group">
+                    <i class="fas fa-phone-volume text-yellow-400 animate-bounce"></i>
+                    <span>DISPATCH HOTLINE</span>
+                </a>
+            </div>
+
+            <!-- Key Metrics Telemetry Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto mt-16 w-full px-2">
+                <div class="glass-panel p-5 rounded-lg border-t-2 border-t-yellow-500/50 text-center">
+                    <div class="text-2xl sm:text-3xl font-black cyber-font text-yellow-400">22+</div>
+                    <div class="text-[11px] text-gray-400 cyber-font tracking-wider mt-1 uppercase">Years Operational</div>
+                    <div class="text-[10px] text-gray-500 mt-0.5">Founded in 2002</div>
+                </div>
+
+                <div class="glass-panel p-5 rounded-lg border-t-2 border-t-cyan-400/50 text-center">
+                    <div class="text-2xl sm:text-3xl font-black cyber-font text-cyan-400">$50B+</div>
+                    <div class="text-[11px] text-gray-400 cyber-font tracking-wider mt-1 uppercase">Consortium Pipeline</div>
+                    <div class="text-[10px] text-gray-500 mt-0.5">Laguna Lake & Matnog Bridge</div>
+                </div>
+
+                <div class="glass-panel p-5 rounded-lg border-t-2 border-t-emerald-400/50 text-center">
+                    <div class="text-2xl sm:text-3xl font-black cyber-font text-emerald-400">100%</div>
+                    <div class="text-[11px] text-gray-400 cyber-font tracking-wider mt-1 uppercase">Mission Completion</div>
+                    <div class="text-[10px] text-gray-500 mt-0.5">Zero Project Failures</div>
+                </div>
+
+                <div class="glass-panel p-5 rounded-lg border-t-2 border-t-purple-400/50 text-center">
+                    <div class="text-2xl sm:text-3xl font-black cyber-font text-purple-400">24/7</div>
+                    <div class="text-[11px] text-gray-400 cyber-font tracking-wider mt-1 uppercase">Rapid Dispatch</div>
+                    <div class="text-[10px] text-gray-500 mt-0.5">Commercial & Industrial</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PAGE 2: PROFILE & HISTORY (CORPORATE DOSSIER) ================= -->
+        <section id="page-2" class="hidden min-h-screen flex-col items-center pt-8 pb-20 px-4 w-full opacity-0 transition-opacity duration-700">
+            
+            <!-- Header Badge -->
+            <div class="flex flex-col items-center text-center mb-10">
+                <div class="relative w-28 h-28 mb-4">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png" 
+                         alt="Earth" 
+                         class="w-full h-full object-contain filter drop-shadow-[0_0_20px_rgba(250,204,21,0.35)]">
+                </div>
+                <span class="hud-tag text-yellow-400 border-yellow-500/30 mb-3"><i class="fas fa-fingerprint"></i> CORPORATE DOSSIER // DECLASSIFIED</span>
+                <h1 class="text-3xl sm:text-5xl luxury-font font-extrabold gold-gradient-text">
+                    BARCHEM TRADING & SERVICES
+                </h1>
+                <p class="text-gray-400 text-xs sm:text-sm cyber-font tracking-widest mt-2 uppercase">Official Genesis & Executive Directory</p>
+            </div>
+
+            <!-- Kinetic Flying Text Narrative Box -->
+            <div class="w-full max-w-4xl mx-auto glass-panel p-6 sm:p-8 rounded-xl border border-yellow-500/30 relative overflow-hidden mb-12">
+                <div class="flex items-center justify-between border-b border-gray-800 pb-3 mb-4 text-xs data-font">
+                    <span class="text-yellow-400 flex items-center gap-2">
+                        <i class="fas fa-terminal"></i> HISTORICAL DATA LOG // 2002-2024
+                    </span>
+                    <button id="skip-text-btn" class="text-gray-400 hover:text-white px-2 py-1 bg-white/5 border border-white/10 rounded transition text-[10px] cyber-font">
+                        <i class="fas fa-forward-step mr-1"></i> FAST REVEAL
+                    </button>
+                </div>
+
+                <div id="history-content" class="animated-text-container" style="color: #10b981;"></div>
+            </div>
+
+            <!-- Visual Timeline: Milestones to $50B Consortium -->
+            <div class="w-full max-w-5xl mx-auto mb-16">
+                <h3 class="luxury-font text-yellow-400 text-xl sm:text-2xl text-center mb-8 tracking-widest">
+                    <i class="fas fa-timeline mr-2"></i> STRATEGIC MILESTONES & EXPANSION
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div class="glass-panel p-4 rounded-lg border-t-2 border-t-yellow-500 flex flex-col justify-between">
+                        <div>
+                            <span class="cyber-font text-yellow-400 font-bold text-lg">2002</span>
+                            <h4 class="font-bold text-sm text-white mt-1">Inception</h4>
+                            <p class="text-xs text-gray-400 mt-2">Founded by Emmanuel R. Barcebal as premier pest containment specialist.</p>
+                        </div>
+                        <span class="text-[10px] text-gray-500 font-mono mt-3">PH DOMESTIC</span>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-lg border-t-2 border-t-cyan-400 flex flex-col justify-between">
+                        <div>
+                            <span class="cyber-font text-cyan-400 font-bold text-lg">2017</span>
+                            <h4 class="font-bold text-sm text-white mt-1">Asianic Alliance</h4>
+                            <p class="text-xs text-gray-400 mt-2">Ramon M. Gallinera joins. BARCHEM GROUP organized for megaproject vision.</p>
+                        </div>
+                        <span class="text-[10px] text-gray-500 font-mono mt-3">MEGA INFRASTRUCTURE</span>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-lg border-t-2 border-t-emerald-400 flex flex-col justify-between">
+                        <div>
+                            <span class="cyber-font text-emerald-400 font-bold text-lg">2018</span>
+                            <h4 class="font-bold text-sm text-white mt-1">Trading Integration</h4>
+                            <p class="text-xs text-gray-400 mt-2">Francis J. Guingona lends high-level financial trading and procurement mastery.</p>
+                        </div>
+                        <span class="text-[10px] text-gray-500 font-mono mt-3">CAPITAL & COMMERCE</span>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-lg border-t-2 border-t-purple-400 flex flex-col justify-between">
+                        <div>
+                            <span class="cyber-font text-purple-400 font-bold text-lg">2020</span>
+                            <h4 class="font-bold text-sm text-white mt-1">Global Consortium</h4>
+                            <p class="text-xs text-gray-400 mt-2">Marivi A. Beltran CPA & SEMACS Group (KSA), D&L Gas (USA), Gunung Steel (ID), E-Steel (SG) back funding.</p>
+                        </div>
+                        <span class="text-[10px] text-gray-500 font-mono mt-3">INTERNATIONAL SYNDICATE</span>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-lg border-t-2 border-t-red-500 flex flex-col justify-between bg-yellow-500/5">
+                        <div>
+                            <span class="cyber-font text-yellow-400 font-bold text-lg">2021+</span>
+                            <h4 class="font-bold text-sm text-yellow-300 mt-1">$50B Mega Project</h4>
+                            <p class="text-xs text-gray-300 mt-2">Goldridge, Elab, & Eagle System collaborate on Laguna Lake & Matnog-to-Samar Bridge.</p>
+                        </div>
+                        <span class="text-[10px] text-yellow-500 font-mono mt-3">NATION-BUILDING</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Executive Leadership Dossier ("Who We Are") -->
+            <div id="committee" class="w-full max-w-5xl mx-auto opacity-0 transition-opacity duration-1000">
+                <div class="text-center mb-10">
+                    <h3 class="luxury-font text-2xl sm:text-3xl font-bold text-yellow-400 tracking-wider">
+                        EXECUTIVE DIRECTORY & BOARD
+                    </h3>
+                    <div class="w-24 h-1 bg-yellow-500/50 mx-auto mt-2"></div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    
+                    <!-- Chairman -->
+                    <div class="glass-panel p-6 rounded-xl border border-yellow-500/30 text-center relative group hover:-translate-y-2 transition-transform">
+                        <div class="w-16 h-16 rounded-full bg-yellow-500/10 border border-yellow-500/40 mx-auto flex items-center justify-center text-yellow-400 text-2xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <span class="hud-tag text-[9px] text-yellow-400 mb-2">BOARD LEADERSHIP</span>
+                        <h4 class="text-white font-bold text-base mt-2">Ramon M. Gallinera</h4>
+                        <p class="text-xs text-yellow-500 cyber-font tracking-wide mt-1">Chairman</p>
+                        <p class="text-[11px] text-gray-400 mt-2">President of Asianic Philippines Corp; Consortium Strategy Orchestrator.</p>
+                    </div>
+
+                    <!-- Vice Chairman / Exec Director -->
+                    <div class="glass-panel p-6 rounded-xl border border-yellow-500/30 text-center relative group hover:-translate-y-2 transition-transform">
+                        <div class="w-16 h-16 rounded-full bg-cyan-500/10 border border-cyan-500/40 mx-auto flex items-center justify-center text-cyan-400 text-2xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <span class="hud-tag text-[9px] text-cyan-400 mb-2">ORIGINAL FOUNDER</span>
+                        <h4 class="text-white font-bold text-base mt-2">Emmanuel R. Barcebal</h4>
+                        <p class="text-xs text-yellow-500 cyber-font tracking-wide mt-1">Vice Chairman / Exec Director</p>
+                        <p class="text-[11px] text-gray-400 mt-2">Pest Control Specialist & Pioneer of Barchem operations since 2002.</p>
+                    </div>
+
+                    <!-- Consultant -->
+                    <div class="glass-panel p-6 rounded-xl border border-yellow-500/30 text-center relative group hover:-translate-y-2 transition-transform">
+                        <div class="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/40 mx-auto flex items-center justify-center text-emerald-400 text-2xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <span class="hud-tag text-[9px] text-emerald-400 mb-2">COMMERCIAL TRADING</span>
+                        <h4 class="text-white font-bold text-base mt-2">Francis J. Guingona</h4>
+                        <p class="text-xs text-yellow-500 cyber-font tracking-wide mt-1">Member / Consultant</p>
+                        <p class="text-[11px] text-gray-400 mt-2">High-level specialist in international financial trading and procurement.</p>
+                    </div>
+
+                    <!-- Finance -->
+                    <div class="glass-panel p-6 rounded-xl border border-yellow-500/30 text-center relative group hover:-translate-y-2 transition-transform">
+                        <div class="w-16 h-16 rounded-full bg-purple-500/10 border border-purple-500/40 mx-auto flex items-center justify-center text-purple-400 text-2xl mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <span class="hud-tag text-[9px] text-purple-400 mb-2">CAPITAL CONTROLLER</span>
+                        <h4 class="text-white font-bold text-base mt-2">Marivi A. Beltran CPA</h4>
+                        <p class="text-xs text-yellow-500 cyber-font tracking-wide mt-1">Finance Director</p>
+                        <p class="text-[11px] text-gray-400 mt-2">Chartered financial executive liaising with Saudi and global syndicate funds.</p>
+                    </div>
+
+                </div>
+
+                <!-- Legal Counsel Badge -->
+                <div class="mt-8 p-6 glass-panel rounded-xl text-center border-t border-gray-800">
+                    <span class="cyber-font text-yellow-500 text-xs tracking-widest uppercase"><i class="fas fa-gavel mr-2"></i> Legal Counsel & Statutory Compliance</span>
+                    <div class="text-white font-bold text-sm sm:text-base mt-2">
+                        Atty. Marie Cenjidoza &bull; Atty. Jamie Salvatierra
+                    </div>
+                </div>
+
+                <!-- Portal Entry Button -->
+                <div class="text-center mt-12">
+                    <button id="enter-portal-btn" class="btn-cyber-gold hud-bracket group !text-base">
+                        <span>LAUNCH COMPANY PORTAL</span>
+                        <i class="fas fa-shield text-black group-hover:rotate-12 transition-transform"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer for Page 2 -->
+            <div id="footer-p2" class="w-full mt-20"></div>
+        </section>
+
+        <!-- ================= PAGE 3: COMPANY PORTAL ================= -->
+        <section id="portal-content" class="hidden min-h-screen pt-8 pb-20 w-full opacity-0 transition-opacity duration-700">
+            
+            <!-- Portal Header -->
+            <div class="flex flex-col items-center mb-10 px-4 text-center">
+                <div class="w-20 h-20 mb-3">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png" 
+                         alt="Earth" 
+                         class="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(0,243,255,0.4)]">
+                </div>
+                <span class="hud-tag text-cyan-400 border-cyan-500/30 mb-2"><i class="fas fa-shield-alt"></i> OPERATIONAL MATRIX // ACTIVE</span>
+                <h1 class="text-3xl sm:text-5xl luxury-font font-black gold-gradient-text">
+                    BARCHEM TRADING & SERVICES
+                </h1>
+                <p class="text-gray-400 text-xs sm:text-sm cyber-font tracking-widest mt-1">Multi-Domain Commercial Defense & Contracting</p>
+            </div>
+
+            <!-- Holographic Media Showcase (Video & Image Vault) -->
+            <div class="portal-wrapper px-4">
+                <div class="gallery-container relative" id="gallery-box">
+                    
+                    <!-- Slide 1: Video -->
+                    <div class="gallery-slide active-slide">
+                        <video autoplay muted loop playsinline class="w-full h-full object-cover">
+                            <source src="barchem1.mp4" type="video/mp4">
+                            <source src="https://barchemservices-trading.github.io/portal/barchem1.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute bottom-4 left-4 z-20 hud-tag !bg-black/70 !text-cyan-400">
+                            <i class="fas fa-video"></i> BARCHEM OPERATIONAL FOOTAGE
+                        </div>
+                    </div>
+
+                    <!-- Slide 2: barchem2.jpg -->
+                    <div class="gallery-slide">
+                        <img src="barchem2.jpg" 
+                             data-fallback="barchem2.jpg"
+                             onerror="this.onerror=null;this.src='https://barchemservices-trading.github.io/portal/' + this.dataset.fallback;"
+                             alt="Barchem Operations 2">
+                        <div class="absolute bottom-4 left-4 z-20 hud-tag !bg-black/70 !text-yellow-400">
+                            <i class="fas fa-camera"></i> FIELD DISINFECTION SQUAD
+                        </div>
+                    </div>
+
+                    <!-- Slide 3: barchem3.jpg -->
+                    <div class="gallery-slide">
+                        <img src="barchem3.jpg" 
+                             data-fallback="barchem3.jpg"
+                             onerror="this.onerror=null;this.src='https://barchemservices-trading.github.io/portal/' + this.dataset.fallback;"
+                             alt="Barchem Operations 3">
+                        <div class="absolute bottom-4 left-4 z-20 hud-tag !bg-black/70 !text-emerald-400">
+                            <i class="fas fa-building"></i> STRUCTURAL PEST CONTROL
+                        </div>
+                    </div>
+
+                    <!-- Slide 4: barchem4.jpg -->
+                    <div class="gallery-slide">
+                        <img src="barchem4.jpg" 
+                             data-fallback="barchem4.jpg"
+                             onerror="this.onerror=null;this.src='https://barchemservices-trading.github.io/portal/' + this.dataset.fallback;"
+                             alt="Barchem Operations 4">
+                        <div class="absolute bottom-4 left-4 z-20 hud-tag !bg-black/70 !text-purple-400">
+                            <i class="fas fa-hard-hat"></i> GENERAL CONSTRUCTION DIVISION
+                        </div>
+                    </div>
+
+                    <!-- Slide 5: barchem5.jpg -->
+                    <div class="gallery-slide">
+                        <img src="barchem5.jpg" 
+                             data-fallback="barchem5.jpg"
+                             onerror="this.onerror=null;this.src='https://barchemservices-trading.github.io/portal/' + this.dataset.fallback;"
+                             alt="Barchem Operations 5">
+                        <div class="absolute bottom-4 left-4 z-20 hud-tag !bg-black/70 !text-white">
+                            <i class="fas fa-warehouse"></i> INDUSTRIAL SUPPLY & TRADING
+                        </div>
+                    </div>
+
+                    <!-- Slide Indicators -->
+                    <div class="absolute bottom-4 right-4 z-20 flex gap-2" id="gallery-dots">
+                        <span class="w-2.5 h-2.5 rounded-full bg-yellow-400 transition-all"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-white/40 transition-all"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-white/40 transition-all"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-white/40 transition-all"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-white/40 transition-all"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Body -->
+            <div class="max-w-5xl mx-auto px-6 text-gray-200 leading-relaxed mt-16 space-y-16">
+                
+                <!-- About Us Section -->
+                <div id="about-section" class="glass-panel p-8 rounded-2xl border border-yellow-500/30 relative">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-3 h-8 bg-yellow-400 rounded-sm"></div>
+                        <h2 id="about-label" class="luxury-font text-yellow-400 text-2xl sm:text-3xl font-extrabold tracking-wider">
+                            ABOUT OUR CAPABILITY
+                        </h2>
+                    </div>
+                    <div id="about-text-container" class="animated-text-container !m-0 !p-0 text-left text-gray-300">
+                    </div>
+                </div>
+
+                <!-- 3D Mission Box -->
+                <div id="mission-container" class="p-8 sm:p-10 text-center rounded-2xl cursor-default">
+                    <div class="relative z-10">
+                        <span class="hud-tag text-yellow-400 border-yellow-500/40 mb-3"><i class="fas fa-compass"></i> SOVEREIGN PURPOSE</span>
+                        <h2 class="luxury-font text-yellow-400 text-2xl sm:text-4xl font-black tracking-widest mb-4">
+                            MISSION STATEMENT
+                        </h2>
+                        <p class="font-['Lora'] italic text-lg sm:text-2xl text-white max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+                            "Barchem delivers innovative technology that exceeds customers’ needs."
+                        </p>
+                        <div class="w-20 h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent mx-auto mt-6"></div>
+                    </div>
+                </div>
+
+                <!-- Core Values (Cyber Armor Cards) -->
+                <div id="values-section">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-3 h-8 bg-cyan-400 rounded-sm"></div>
+                        <h2 id="values-label" class="luxury-font text-cyan-400 text-2xl sm:text-3xl font-extrabold tracking-wider">
+                            CORE CORPORATE VALUES
+                        </h2>
+                    </div>
+
+                    <div class="space-y-4" id="values-list">
+                        
+                        <div class="cyber-card rounded-lg flex flex-col sm:flex-row sm:items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-yellow-400 shrink-0 text-xl">
+                                <i class="fas fa-users-gear"></i>
+                            </div>
+                            <div>
+                                <strong>EMPLOYEES</strong>
+                                <p class="text-sm text-gray-300 mt-1">The primary source of our success. We communicate openly, treat each other with absolute respect, and foster relentless teamwork and professional mastery.</p>
+                            </div>
+                        </div>
+
+                        <div class="cyber-card rounded-lg flex flex-col sm:flex-row sm:items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 shrink-0 text-xl">
+                                <i class="fas fa-handshake-angle"></i>
+                            </div>
+                            <div>
+                                <strong>CUSTOMERS</strong>
+                                <p class="text-sm text-gray-300 mt-1">Receive our unyielding commitment to premium tier products, uncompromising precision, and superior operational response times.</p>
+                            </div>
+                        </div>
+
+                        <div class="cyber-card rounded-lg flex flex-col sm:flex-row sm:items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 text-xl">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <div>
+                                <strong>PRODUCTS &amp; TECH</strong>
+                                <p class="text-sm text-gray-300 mt-1">Engineered on breakthrough chemical and structural technology, continuous iterative improvement, and rigorous laboratory safety standards.</p>
+                            </div>
+                        </div>
+
+                        <div class="cyber-card rounded-lg flex flex-col sm:flex-row sm:items-center gap-4">
+                            <div class="w-12 h-12 rounded-lg bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0 text-xl">
+                                <i class="fas fa-scale-balanced"></i>
+                            </div>
+                            <div>
+                                <strong>ETHICAL CONDUCT</strong>
+                                <p class="text-sm text-gray-300 mt-1">A deep, non-negotiable dedication to human safety, environmental stewardship, and the highest integrity in domestic and global commerce.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Tactical Services Grid -->
+                <div id="services-section">
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-8 bg-yellow-400 rounded-sm"></div>
+                            <div>
+                                <h2 id="services-label" class="luxury-font text-yellow-400 text-2xl sm:text-3xl font-extrabold tracking-wider">
+                                    DEPLOYABLE SERVICES
+                                </h2>
+                                <p class="text-xs text-gray-400 cyber-font mt-0.5">Click any division to open dispatch contact</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="services-grid">
+                        
+                        <div class="service-box p-7 rounded-xl" onclick="openServiceModal('General Disinfection', 'Eliminating viruses, pathogens, and infectious microbial organisms via cutting-edge metabolic interference.')">
+                            <div class="flex items-start justify-between">
+                                <div class="w-12 h-12 rounded-lg bg-yellow-500/10 border border-yellow-500/40 flex items-center justify-center text-yellow-400 text-2xl mb-4">
+                                    <i class="fas fa-biohazard"></i>
+                                </div>
+                                <span class="hud-tag text-[9px] text-yellow-400">BIO-DEFENSE</span>
+                            </div>
+                            <h4 class="text-white font-bold text-lg cyber-font mb-2">General Disinfection</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed">Medical-grade microbial decontamination eliminating viruses, airborne bacteria, and pathogens with non-corrosive residual protection.</p>
+                        </div>
+
+                        <div class="service-box p-7 rounded-xl" onclick="openServiceModal('Termite Protection', 'Protecting high-value commercial and residential investments from irreversible subterranean damage.')">
+                            <div class="flex items-start justify-between">
+                                <div class="w-12 h-12 rounded-lg bg-cyan-500/10 border border-cyan-500/40 flex items-center justify-center text-cyan-400 text-2xl mb-4">
+                                    <i class="fas fa-shield-virus"></i>
+                                </div>
+                                <span class="hud-tag text-[9px] text-cyan-400">STRUCTURAL INTEGRITY</span>
+                            </div>
+                            <h4 class="text-white font-bold text-lg cyber-font mb-2">Termite Protection</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed">Advanced perimeter soil barrier treatment and colony elimination systems protecting multi-million peso real estate assets.</p>
+                        </div>
+
+                        <div class="service-box p-7 rounded-xl" onclick="openServiceModal('General Pest Control', 'Maintaining disease-free commercial, hospitality, and residential properties through systematic pest reduction.')">
+                            <div class="flex items-start justify-between">
+                                <div class="w-12 h-12 rounded-lg bg-emerald-500/10 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-2xl mb-4">
+                                    <i class="fas fa-bug"></i>
+                                </div>
+                                <span class="hud-tag text-[9px] text-emerald-400">VECTOR REDUCTION</span>
+                            </div>
+                            <h4 class="text-white font-bold text-lg cyber-font mb-2">General Pest Control</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed">Targeted eradication protocols for rodents, blattella germanica, and hazardous pests with zero business downtime.</p>
+                        </div>
+
+                        <div class="service-box p-7 rounded-xl" onclick="openServiceModal('General Construction', 'Turnkey civil engineering, structural rehabilitation, architectural finishing, and mega-project consortium execution.')">
+                            <div class="flex items-start justify-between">
+                                <div class="w-12 h-12 rounded-lg bg-purple-500/10 border border-purple-500/40 flex items-center justify-center text-purple-400 text-2xl mb-4">
+                                    <i class="fas fa-trowel-bricks"></i>
+                                </div>
+                                <span class="hud-tag text-[9px] text-purple-400">CIVIL ENGINEERING</span>
+                            </div>
+                            <h4 class="text-white font-bold text-lg cyber-font mb-2">General Construction</h4>
+                            <p class="text-sm text-gray-400 leading-relaxed">Commercial building development, industrial facility repairs, seismic retrofit, and consortium infrastructure backing.</p>
+                        </div>
+
+                    </div>
+
+                    <!-- Ancillary Supplies Box -->
+                    <div class="glass-panel p-6 rounded-xl border border-gray-800 mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center shrink-0">
+                                <i class="fas fa-truck-ramp-box"></i>
+                            </div>
+                            <div>
+                                <h5 class="text-white font-bold text-sm cyber-font">ALSO SUPPLYING INDUSTRIAL ASSETS</h5>
+                                <p class="text-xs text-gray-400">Roofing Supplies, Industrial Safety Devices, Commercial Office Supplies, Heavy Shelving Storage.</p>
+                            </div>
+                        </div>
+                        <button onclick="openServiceModal('Industrial & Trading Supplies', 'Roofing, Safety Equipment, and Heavy-duty Shelving distribution.')" class="btn-cyber-outline !py-2.5 !px-4 !text-xs whitespace-nowrap">
+                            INQUIRE SUPPLIES
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer for Page 3 -->
+            <div id="footer-p3" class="w-full mt-20"></div>
+        </section>
+
+    </main>
+
+    <!-- SERVICE ACTION MODAL -->
+    <div id="service-modal" class="fixed inset-0 z-[300] hidden items-center justify-center bg-black/85 backdrop-blur-md p-4">
+        <div class="modal-content glass-panel border-2 border-yellow-500/60 p-6 sm:p-8 rounded-2xl max-w-lg w-full relative shadow-[0_0_50px_rgba(250,204,21,0.25)] text-center animate-[zoomIn_0.3s_ease-out]">
+            
+            <button onclick="closeServiceModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:border-yellow-400 transition flex items-center justify-center">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <div class="w-16 h-16 rounded-2xl bg-yellow-500/10 border border-yellow-500/40 text-yellow-400 flex items-center justify-center text-2xl mx-auto mb-4">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+
+            <span class="hud-tag text-yellow-400 border-yellow-500/30 mb-2">DEPLOYMENT PROTOCOL</span>
+            <h3 id="modal-service-title" class="luxury-font text-2xl font-bold text-white mb-2">Service Name</h3>
+            <p id="modal-service-desc" class="text-xs text-gray-400 mb-6 leading-relaxed">Detailed service description goes here.</p>
+
+            <div class="flex flex-col gap-3">
+                <a href="https://m.me/100054516412008" target="_blank" class="w-full py-3.5 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold cyber-font text-xs tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 transition">
+                    <i class="fab fa-facebook-messenger text-base"></i>
+                    <span>START DIRECT MESSENGER CHAT</span>
+                </a>
+
+                <button onclick="revealNumber()" class="w-full py-3.5 px-4 rounded-lg bg-yellow-500 hover:bg-yellow-400 text-black font-extrabold cyber-font text-xs tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-yellow-500/30 transition">
+                    <i class="fas fa-phone text-sm"></i>
+                    <span>SHOW DISPATCH HOTLINE</span>
+                </button>
+
+                <div id="contact-number-display" class="hidden p-4 rounded-lg bg-black/60 border border-yellow-500/50 mt-2">
+                    <div class="text-xs text-gray-400 cyber-font mb-1">DIRECT VOICE DISPATCH:</div>
+                    <a href="tel:09954036719" class="text-2xl font-black text-yellow-400 hover:underline tracking-wider font-mono">
+                        0995-403-6719
+                    </a>
+                    <button onclick="copyHotline()" class="mt-2 text-xs text-cyan-400 hover:text-white flex items-center justify-center gap-1 mx-auto transition">
+                        <i class="far fa-copy"></i> Copy Hotline Number
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- FLOATING ACTION HUB -->
+    <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+        
+        <!-- Share Menu Drawer -->
+        <div id="share-menu" class="hidden flex-col gap-3 bg-gray-950/95 border border-yellow-500/40 p-4 rounded-xl shadow-2xl backdrop-blur-lg transform transition-all opacity-0 translate-y-2 min-w-[160px]">
+            <div class="text-[10px] cyber-font text-yellow-500 tracking-wider font-bold mb-1 border-b border-gray-800 pb-1">TRANSMIT DOSSIER</div>
+            <a href="#" onclick="shareFacebook(event)" class="text-gray-300 hover:text-yellow-400 font-bold text-xs flex items-center gap-3 transition">
+                <i class="fab fa-facebook text-blue-500 text-base"></i> Facebook
+            </a>
+            <a href="#" onclick="shareMessenger(event)" class="text-gray-300 hover:text-yellow-400 font-bold text-xs flex items-center gap-3 transition">
+                <i class="fab fa-facebook-messenger text-cyan-400 text-base"></i> Messenger
+            </a>
+            <a href="#" onclick="shareEmail(event)" class="text-gray-300 hover:text-yellow-400 font-bold text-xs flex items-center gap-3 transition">
+                <i class="fas fa-envelope text-yellow-400 text-base"></i> Email Dossier
+            </a>
+            <button onclick="copySiteLink(event)" class="text-gray-300 hover:text-yellow-400 font-bold text-xs flex items-center gap-3 transition pt-1 border-t border-gray-800 text-left">
+                <i class="fas fa-link text-emerald-400 text-base"></i> Copy Portal Link
+            </button>
+        </div>
+
+        <!-- Floating Hub Buttons -->
+        <div class="flex items-center gap-2">
+            <a href="tel:09954036719" class="w-12 h-12 rounded-full bg-emerald-500 hover:bg-emerald-400 text-black flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.5)] transition-transform hover:scale-110" title="Emergency Direct Call">
+                <i class="fas fa-phone-alt text-lg"></i>
+            </a>
+
+            <button id="share-toggle-btn" class="w-12 h-12 rounded-full bg-yellow-500 hover:bg-yellow-400 text-black flex items-center justify-center shadow-[0_0_20px_rgba(250,204,21,0.5)] transition-transform hover:scale-110" title="Share Portal">
+                <i class="fas fa-share-nodes text-lg"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- CYBER TOAST NOTIFICATION -->
+    <div id="cyber-toast">
+        <i class="fas fa-circle-check text-yellow-400 text-lg"></i>
+        <span id="toast-message">Action confirmed.</span>
+    </div>
+
+    <!-- FOOTER TEMPLATE (INJECTED DYNAMICALLY) -->
     <template id="footer-template">
-        <footer class="barchem-footer">
-            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+        <footer class="bg-gray-950/90 border-t border-yellow-500/25 py-12 px-6 backdrop-blur-lg">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-gray-400 text-xs">
+                
                 <div>
-                    <h4 class="footer-title">HEAD OFFICE</h4>
-                    <p class="text-sm leading-relaxed">
+                    <h4 class="text-yellow-400 font-bold cyber-font text-sm tracking-widest mb-3 flex items-center gap-2">
+                        <i class="fas fa-location-dot"></i> HEADQUARTERS & DIRECTORY
+                    </h4>
+                    <p class="leading-relaxed text-gray-300">
                         9th Floor Unit 901, 902 Elab Corp.<br>
                         BTTC Centre, Ortigas Ave.<br>
-                        Greenhills, San Juan, Philippines
+                        Greenhills, San Juan, Metro Manila, Philippines
                     </p>
-                    <p class="mt-4 text-yellow-500 font-bold text-lg"><a href="tel:09954036719">0995-403-6719</a></p>
-                </div>
-                <div>
-                    <h4 class="footer-title">OPENING HOURS</h4>
-                    <div class="text-sm space-y-2">
-                        <div class="flex justify-between border-b border-gray-800 pb-1"><span>Mon - Sat:</span><span class="text-white">7:00am – 7:30pm</span></div>
-                        <div class="flex justify-between border-b border-gray-800 pb-1"><span>Sunday:</span><span class="text-white">7:00am – 4:30pm</span></div>
+                    <div class="mt-4 pt-4 border-t border-gray-800">
+                        <span class="text-gray-500 uppercase tracking-widest text-[10px]">24/7 Dispatch Hotline:</span>
+                        <p class="text-yellow-400 font-mono font-bold text-lg mt-0.5">
+                            <a href="tel:09954036719" class="hover:underline">0995-403-6719</a>
+                        </p>
                     </div>
                 </div>
-                <div class="flex flex-col md:items-end justify-center">
-                    <h1 class="font-['Cinzel'] text-white text-xl">BARCHEM</h1>
-                    <p class="text-[10px] tracking-[3px] text-yellow-600 mt-1 uppercase">Trading & Services</p>
-                    <p class="text-[9px] text-gray-600 mt-6">© 2002-2024 Barchem Group. All Rights Reserved.</p>
+
+                <div>
+                    <h4 class="text-yellow-400 font-bold cyber-font text-sm tracking-widest mb-3 flex items-center gap-2">
+                        <i class="far fa-clock"></i> OPERATIONAL HOURS
+                    </h4>
+                    <div class="space-y-2 text-gray-300">
+                        <div class="flex justify-between border-b border-gray-800/80 pb-1.5">
+                            <span class="font-mono">Monday – Saturday:</span>
+                            <span class="text-white font-bold">7:00 AM – 7:30 PM</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800/80 pb-1.5">
+                            <span class="font-mono">Sunday:</span>
+                            <span class="text-white font-bold">7:00 AM – 4:30 PM</span>
+                        </div>
+                        <div class="text-[10px] text-emerald-400 mt-2">
+                            <i class="fas fa-bolt mr-1"></i> 24/7 Emergency commercial pest & disinfection callouts available.
+                        </div>
+                    </div>
                 </div>
+
+                <div class="flex flex-col md:items-end justify-center">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="w-2.5 h-2.5 bg-yellow-400 rounded-sm"></span>
+                        <h1 class="luxury-font text-white text-2xl font-black tracking-wider">BARCHEM</h1>
+                    </div>
+                    <p class="text-xs text-yellow-500/90 cyber-font tracking-[4px] uppercase font-bold">TRADING & SERVICES</p>
+                    <p class="text-[11px] text-gray-500 mt-4 text-center md:text-right">
+                        &copy; 2002-2024 Barchem Group.<br>All Sovereign Rights Reserved.
+                    </p>
+                </div>
+
             </div>
         </footer>
     </template>
 
+    <!-- SCRIPT SECTION -->
     <script>
-        // --- SAFE SUPABASE INITIALIZATION ---
+        // --- 1. SAFE SUPABASE ANALYTICS TRACKING ---
         let supabaseClient = null;
         try {
             const supabaseUrl = 'https://iacumukcjnsbhdvkngfq.supabase.co';
@@ -676,134 +1334,257 @@
                 supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
             }
         } catch (e) {
-            console.warn("Supabase tracking blocked by local browser settings. Visuals will load normally.");
+            console.warn("Supabase tracking initialized in fallback mode.");
         }
 
         async function trackVisitor() {
-            if (!supabaseClient) return; // Skip tracking safely if it failed to load locally
+            if (!supabaseClient) return;
             try {
-                // Get the referrer (where they came from), or default to Direct
-                let trafficSource = document.referrer;
-                if (!trafficSource || trafficSource === '') {
-                    trafficSource = 'Direct Traffic';
-                }
-
+                let trafficSource = document.referrer || 'Direct Traffic';
                 const { error } = await supabaseClient
                     .from('visitors')
-                    .insert([
-                        { 
-                            site_name: 'Barchem Trading', 
-                            page_path: window.location.pathname, 
-                            user_agent: navigator.userAgent,
-                            referrer: trafficSource // Capture the source
-                        }
-                    ]);
-                if (error) console.log('Tracking error:', error);
+                    .insert([{ 
+                        site_name: 'Barchem Trading', 
+                        page_path: window.location.pathname, 
+                        user_agent: navigator.userAgent,
+                        referrer: trafficSource 
+                    }]);
+                if (error) console.log('Analytics ping:', error);
             } catch (err) {
-                console.log('Error initializing tracker:', err);
+                console.log('Analytics note:', err);
             }
         }
-        
-        // Track the visitor immediately when the script runs
         window.addEventListener('load', trackVisitor);
 
-        // --- MATRIX ENGINE ---
+        // --- 2. TACTICAL WEB AUDIO API SYNTHESIZER ---
+        let audioCtx = null;
+        let audioEnabled = false;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSciFiSound(type = 'click') {
+            if (!audioEnabled || !audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(880, now);
+                    osc.frequency.exponentialRampToValueAtTime(1760, now + 0.08);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'portal') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(220, now);
+                    osc.frequency.exponentialRampToValueAtTime(550, now + 0.35);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } else if (type === 'beep') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(600, now);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                }
+            } catch (e) {
+                console.warn('Audio synthesis note:', e);
+            }
+        }
+
+        const audioToggleBtn = document.getElementById('audio-toggle-btn');
+        const audioIcon = document.getElementById('audio-icon');
+        const audioLabel = document.getElementById('audio-label');
+
+        audioToggleBtn.addEventListener('click', () => {
+            initAudio();
+            audioEnabled = !audioEnabled;
+            if (audioEnabled) {
+                audioIcon.className = 'fas fa-volume-high text-cyan-300';
+                audioLabel.textContent = 'AUDIO ON';
+                audioLabel.className = 'hidden sm:inline cyber-font text-[10px] tracking-wider text-cyan-300 font-bold';
+                playSciFiSound('portal');
+                showToast('Tactical Sci-Fi Audio Initialized');
+            } else {
+                audioIcon.className = 'fas fa-volume-xmark text-gray-400';
+                audioLabel.textContent = 'AUDIO OFF';
+                audioLabel.className = 'hidden sm:inline cyber-font text-[10px] tracking-wider text-gray-400';
+                showToast('Audio Muted');
+            }
+        });
+
+        // Add sound to buttons
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.service-box') || e.target.closest('.nav-item')) {
+                playSciFiSound('beep');
+            }
+        });
+
+        // --- 3. LIVE PHILIPPINE STANDARD TIME (PST/PHT) CLOCK ---
+        function updateClock() {
+            const clockEl = document.getElementById('live-pht-clock');
+            if (!clockEl) return;
+            const now = new Date();
+            // Format PHT (UTC+8)
+            const options = { timeZone: 'Asia/Manila', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            clockEl.textContent = new Intl.DateTimeFormat('en-GB', options).format(now) + ' PHT';
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- 4. ADVANCED MATRIX & CONSTELLATION CANVAS ---
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
         let width = canvas.width = window.innerWidth;
         let height = canvas.height = window.innerHeight;
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%&";
+        
+        const chars = "BARCHEM0123456789$+-*/=%&<>ΩΔΨ";
         const fontSize = 16;
-        let columns = width / fontSize;
-        let drops = Array(Math.floor(columns)).fill(1);
+        let columns = Math.floor(width / fontSize);
+        let drops = Array(columns).fill(1);
 
-        function draw() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        // Interactive mouse coordinates for particles
+        let mouseX = width / 2;
+        let mouseY = height / 2;
+        let mouseActive = false;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            mouseActive = true;
+        });
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(3, 7, 18, 0.08)";
             ctx.fillRect(0, 0, width, height);
-            ctx.font = fontSize + "px monospace";
+
+            ctx.font = fontSize + "px 'JetBrains Mono', monospace";
             ctx.shadowBlur = 4;
-            ctx.shadowColor = "#00ff41";
+            ctx.shadowColor = "#facc15";
+
             for (let i = 0; i < drops.length; i++) {
                 const text = chars.charAt(Math.floor(Math.random() * chars.length));
-                ctx.fillStyle = (Math.random() > 0.95) ? "#fff" : "#00ff41"; 
+                // Randomly alternate between Matrix Green, Tactical Gold and Holo Cyan
+                const rand = Math.random();
+                if (rand > 0.96) {
+                    ctx.fillStyle = "#ffffff";
+                } else if (rand > 0.85) {
+                    ctx.fillStyle = "#facc15"; // gold
+                } else if (rand > 0.70) {
+                    ctx.fillStyle = "#00f3ff"; // cyan
+                } else {
+                    ctx.fillStyle = "#10b981"; // emerald
+                }
+
                 ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > height && Math.random() > 0.975) drops[i] = 0;
+
+                if (drops[i] * fontSize > height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
                 drops[i]++;
             }
             ctx.shadowBlur = 0;
         }
-        setInterval(draw, 35);
+        setInterval(drawMatrix, 40);
 
-        // --- FOOTER INJECTION ---
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            columns = Math.floor(width / fontSize);
+            drops = Array(columns).fill(1);
+        });
+
+        // --- 5. FOOTER INJECTION ---
         function injectFooters() {
             const template = document.getElementById('footer-template').innerHTML;
-            document.getElementById('footer-p2').innerHTML = template;
-            document.getElementById('footer-p3').innerHTML = template;
+            const p2 = document.getElementById('footer-p2');
+            const p3 = document.getElementById('footer-p3');
+            if (p2) p2.innerHTML = template;
+            if (p3) p3.innerHTML = template;
         }
         injectFooters();
 
-        // --- NAVIGATION ---
+        // --- 6. NAVIGATION SYSTEM ---
         const navToggle = document.getElementById('nav-toggle');
         const sidebar = document.getElementById('dashboard-sidebar');
         const closeSidebarBtn = document.getElementById('close-sidebar');
 
-        function openSidebar() { sidebar.classList.add('active'); navToggle.style.display = 'none'; }
-        function closeSidebar() { sidebar.classList.remove('active'); navToggle.style.display = 'flex'; }
+        function openSidebar() {
+            playSciFiSound('click');
+            sidebar.classList.add('active');
+        }
+        function closeSidebar() {
+            playSciFiSound('click');
+            sidebar.classList.remove('active');
+        }
         navToggle.addEventListener('click', openSidebar);
         closeSidebarBtn.addEventListener('click', closeSidebar);
 
         function navigateTo(page) {
+            playSciFiSound('portal');
             closeSidebar();
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active-page'));
-            
+
             const welcomeUI = document.getElementById('welcome-ui');
             const page2 = document.getElementById('page-2');
             const portalContent = document.getElementById('portal-content');
 
-            welcomeUI.style.display = 'none'; welcomeUI.style.opacity = '0';
-            page2.style.display = 'none'; page2.style.opacity = '0';
-            portalContent.style.display = 'none'; portalContent.style.opacity = '0';
+            welcomeUI.classList.add('hidden');
+            welcomeUI.style.opacity = '0';
+            page2.classList.add('hidden');
+            page2.style.opacity = '0';
+            portalContent.classList.add('hidden');
+            portalContent.style.opacity = '0';
 
-            if(page === 'home') {
-                welcomeUI.style.display = 'flex'; setTimeout(() => welcomeUI.style.opacity = '1', 50);
+            if (page === 'home') {
+                welcomeUI.classList.remove('hidden');
+                setTimeout(() => { welcomeUI.style.opacity = '1'; }, 50);
             } else if (page === 'profile') {
-                page2.style.display = 'flex';
+                page2.classList.remove('hidden');
                 setTimeout(() => {
                     page2.style.opacity = '1';
                     startHistoryAnimation();
                 }, 50);
             } else if (page === 'company') {
-                portalContent.style.display = 'block';
+                portalContent.classList.remove('hidden');
                 setTimeout(() => {
                     portalContent.style.opacity = '1';
-                    document.getElementById('gallery-box').classList.add('forming-active');
-                    setTimeout(() => {
-                        document.getElementById('gallery-box').classList.add('forming-done');
-                    }, 3000);
                 }, 50);
                 startGallery();
             }
-            window.scrollTo(0,0);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // --- TEXT ANIMATION LOGIC ---
-        const historyText = "Barchem Trading and Services was initially started by Mr. Emmanuel R. Barcebal in 2002. Who is a leading Pest Control Specialist in the Philippines: In 2017, Mr. Ramon M. Gallinera of Asianic Philippines Corp joined his team and organized BARCHEM GROUP to engage in the development of Laguna Lake Development and Matnog to Samar Bridge. In 2018 Mr. Francis J. Guingona joined the group to lend his expertise in Financial Trading. In 2020 during the height of Pandemic Ms. Marivi A. Beltran a CPA and SEMACS Group in Jeddah KSA offered to initially fund the project. D & L Gas, LCC, USA, Florida, Gunung Steel, Jakarta Indonesia and E-steel of Singapore. In 2021 Goldridge Construction, Elab and Eagle System joined the Group and Collaborated to undertake the $50 Billion Dollar Development of LAGUNA LAKE and MATNOG to SAMAR BRIDGE.";
-        const aboutTextString = "Barchem was established in 2002 for trading and general contracting. Since its inception, Barchem has successfully performed all awarded projects in maintenance, disinfection, pest control, construction services, and the distribution of safety devices. Barchem has gained the unwavering trust of its clients, with its name becoming a hallmark of credibility and professionalism.";
+        // Hook Page 1 Buttons
+        document.getElementById('access-now-btn').addEventListener('click', () => navigateTo('profile'));
+        document.getElementById('enter-portal-btn').addEventListener('click', () => navigateTo('company'));
 
-        const committee = document.getElementById('committee');
+        // --- 7. KINETIC FLYING TEXT ENGINE ---
+        const historyText = "Barchem Trading and Services was initially started by Mr. Emmanuel R. Barcebal in 2002, who is a leading Pest Control Specialist in the Philippines. In 2017, Mr. Ramon M. Gallinera of Asianic Philippines Corp joined his team and organized BARCHEM GROUP to engage in the development of Laguna Lake Development and Matnog to Samar Bridge. In 2018 Mr. Francis J. Guingona joined the group to lend his expertise in Financial Trading. In 2020 during the height of Pandemic Ms. Marivi A. Beltran a CPA and SEMACS Group in Jeddah KSA offered to initially fund the project. D & L Gas, LCC, USA, Florida, Gunung Steel, Jakarta Indonesia and E-steel of Singapore. In 2021 Goldridge Construction, Elab and Eagle System joined the Group and Collaborated to undertake the $50 Billion Dollar Development of LAGUNA LAKE and MATNOG to SAMAR BRIDGE.";
+        
+        const aboutTextString = "Barchem was established in 2002 for specialized trading and general contracting. Since its inception, Barchem has successfully executed all awarded projects across structural maintenance, medical-grade disinfection, advanced pest control, heavy construction services, and the nationwide distribution of certified safety devices. Barchem has earned the unwavering trust of institutional clients, with its name standing as an industry hallmark of credibility, technical precision, and sovereign excellence.";
+
         const historyContainer = document.getElementById('history-content');
         const aboutContainer = document.getElementById('about-text-container');
-        
+        const committee = document.getElementById('committee');
+
         let historyAnimRun = false;
         let aboutAnimRun = false;
-
-        async function startHistoryAnimation() {
-            if(historyAnimRun) return; 
-            await buildFlyingText(historyContainer, historyText, 20); 
-            committee.style.opacity = '1';
-            document.getElementById('enter-portal-btn').classList.remove('hidden');
-            historyAnimRun = true;
-        }
 
         async function buildFlyingText(container, text, delayMs, forceDuration = 0) {
             container.innerHTML = '';
@@ -819,9 +1600,9 @@
                     const span = document.createElement('span');
                     span.textContent = char;
                     span.className = 'letter';
-                    span.style.setProperty('--x', (Math.random() * 500 - 250) + 'px');
-                    span.style.setProperty('--y', (Math.random() * 500 - 250) + 'px');
-                    span.style.setProperty('--z', (Math.random() * 500 - 250) + 'px');
+                    span.style.setProperty('--x', (Math.random() * 400 - 200) + 'px');
+                    span.style.setProperty('--y', (Math.random() * 400 - 200) + 'px');
+                    span.style.setProperty('--z', (Math.random() * 400 - 200) + 'px');
                     span.style.setProperty('--r', (Math.random() * 360) + 'deg');
                     wordSpan.appendChild(span);
                     allSpans.push(span);
@@ -829,194 +1610,219 @@
                 wordSpan.appendChild(document.createTextNode(' '));
             }
 
-            let chunkSize = 1;
+            let chunkSize = 2;
             let finalDelay = delayMs;
 
             if (forceDuration > 0) {
                 finalDelay = forceDuration / allSpans.length;
-                if(finalDelay < 5) { 
-                    finalDelay = 10; 
+                if (finalDelay < 5) {
+                    finalDelay = 10;
                     chunkSize = Math.ceil(allSpans.length / (forceDuration / 10));
                 }
             }
 
             for (let i = 0; i < allSpans.length; i += chunkSize) {
-                for(let j=0; j < chunkSize && (i+j) < allSpans.length; j++){
-                    allSpans[i+j].classList.add('assembled');
+                for (let j = 0; j < chunkSize && (i + j) < allSpans.length; j++) {
+                    allSpans[i + j].classList.add('assembled');
                 }
                 await new Promise(r => setTimeout(r, finalDelay));
             }
-            
-            setTimeout(() => allSpans.forEach(l => l.classList.add('gold-spark')), 500);
+
+            setTimeout(() => allSpans.forEach(l => l.classList.add('gold-spark')), 400);
         }
 
-        // --- 3D TILT EFFECT FOR MISSION ---
+        async function startHistoryAnimation() {
+            if (historyAnimRun) return;
+            historyAnimRun = true;
+            await buildFlyingText(historyContainer, historyText, 16);
+            if (committee) committee.style.opacity = '1';
+        }
+
+        // Fast Reveal Button
+        document.getElementById('skip-text-btn').addEventListener('click', () => {
+            playSciFiSound('click');
+            historyContainer.querySelectorAll('.letter').forEach(l => {
+                l.classList.add('assembled', 'gold-spark');
+            });
+            if (committee) committee.style.opacity = '1';
+        });
+
+        // --- 8. 3D MISSION CARD TILT EFFECT ---
         const missionBox = document.getElementById('mission-container');
-        missionBox.addEventListener('mousemove', (e) => {
-            const rect = missionBox.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const xCenter = rect.width / 2;
-            const yCenter = rect.height / 2;
-            
-            const rotateX = ((y - yCenter) / yCenter) * -5; 
-            const rotateY = ((x - xCenter) / xCenter) * 5;
-
-            missionBox.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-        });
-
-        missionBox.addEventListener('mouseleave', () => {
-            missionBox.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
-        });
-
-        // --- SERVICE AUTO-ROTATION LOGIC ---
-        const serviceBoxes = document.querySelectorAll('.service-box');
-        let currentServiceIndex = 0;
-        let serviceInterval;
-
-        function rotateServiceHover() {
-            serviceBoxes.forEach(box => box.classList.remove('auto-hover'));
-            if(serviceBoxes.length > 0) {
-                serviceBoxes[currentServiceIndex].classList.add('auto-hover');
-                currentServiceIndex = (currentServiceIndex + 1) % serviceBoxes.length;
-            }
+        if (missionBox) {
+            missionBox.addEventListener('mousemove', (e) => {
+                const rect = missionBox.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const xCenter = rect.width / 2;
+                const yCenter = rect.height / 2;
+                const rotateX = ((y - yCenter) / yCenter) * -6;
+                const rotateY = ((x - xCenter) / xCenter) * 6;
+                missionBox.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            missionBox.addEventListener('mouseleave', () => {
+                missionBox.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+            });
         }
 
-        function startServiceRotation() {
-            if(serviceInterval) clearInterval(serviceInterval);
-            serviceInterval = setInterval(rotateServiceHover, 2000);
-        }
-
-        function stopServiceRotation() {
-            if(serviceInterval) clearInterval(serviceInterval);
-            serviceBoxes.forEach(box => box.classList.remove('auto-hover'));
-        }
-
-        // --- GENERIC OBSERVER (Run Once Elements) ---
-        const observer = new IntersectionObserver((entries) => {
+        // --- 9. INTERSECTION OBSERVERS FOR SCROLL REVEALS ---
+        const scrollObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    const id = entry.target.id;
-
-                    if(id === 'about-label') {
-                        entry.target.classList.remove('slide-hidden');
-                        entry.target.classList.add('slide-visible');
-                    }
-                    if(id === 'about-section' && !aboutAnimRun) {
+                    if (entry.target.id === 'about-section' && !aboutAnimRun) {
                         aboutAnimRun = true;
-                        buildFlyingText(aboutContainer, aboutTextString, 0, 5000);
+                        buildFlyingText(aboutContainer, aboutTextString, 0, 4500);
                     }
-                    if(id === 'mission-container') {
-                        entry.target.classList.remove('slide-hidden');
-                        entry.target.classList.add('slide-visible');
-                    }
-                    if(id === 'values-label') {
-                        entry.target.classList.remove('slide-hidden');
-                        entry.target.classList.add('slide-visible');
-                    }
-                    if(id === 'services-label') {
-                        entry.target.classList.remove('slide-hidden');
-                        entry.target.classList.add('slide-visible');
-                    }
-                    if(id === 'services-grid') {
-                        entry.target.querySelectorAll('.service-box').forEach((box, index) => {
-                            setTimeout(() => box.classList.add('stagger-visible'), index * 200);
-                        });
+                    if (entry.target.id === 'services-grid') {
                         startServiceRotation();
                     }
-                    observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.2 });
+        }, { threshold: 0.15 });
 
-        ['about-label', 'about-section', 'mission-container', 'values-label', 'services-label', 'services-grid']
-            .forEach(id => {
-                const el = document.getElementById(id);
-                if(el) observer.observe(el);
-            });
+        ['about-section', 'services-grid'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) scrollObserver.observe(el);
+        });
 
-        // --- SPECIFIC OBSERVER FOR CORE VALUES (Alternating + Toggle on Scroll) ---
+        // Core Values Animated Slide In
         const valuesList = document.getElementById('values-list');
-        if(valuesList) {
-            const valueCards = valuesList.querySelectorAll('.cyber-card');
-            
-            valueCards.forEach((card, index) => {
-                card.classList.remove('value-text-hidden', 'value-text-visible');
-                if(index % 2 === 0) {
-                    card.classList.add('cv-slide-left');
-                } else {
-                    card.classList.add('cv-slide-right');
-                }
+        if (valuesList) {
+            const cards = valuesList.querySelectorAll('.cyber-card');
+            cards.forEach((card, index) => {
+                card.classList.add(index % 2 === 0 ? 'cv-slide-left' : 'cv-slide-right');
             });
 
             const valuesObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
-                    const cards = entry.target.querySelectorAll('.cyber-card');
-                    if(entry.isIntersecting) {
+                    if (entry.isIntersecting) {
                         cards.forEach((card, index) => {
-                            setTimeout(() => {
-                                card.classList.add('cv-active');
-                            }, index * 200);
-                        });
-                    } else {
-                        cards.forEach(card => {
-                            card.classList.remove('cv-active');
+                            setTimeout(() => { card.classList.add('cv-active'); }, index * 180);
                         });
                     }
                 });
             }, { threshold: 0.1 });
-
             valuesObserver.observe(valuesList);
         }
 
+        // --- 10. GALLERY SLIDER ENGINE ---
+        let currentSlide = 0;
+        let galleryInterval = null;
+
+        function showSlide(index) {
+            const slides = document.querySelectorAll('.gallery-slide');
+            const dots = document.querySelectorAll('#gallery-dots span');
+            if (!slides.length) return;
+
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active-slide');
+                if (dots[i]) {
+                    dots[i].className = 'w-2.5 h-2.5 rounded-full bg-white/30 transition-all';
+                }
+            });
+
+            currentSlide = (index + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active-slide');
+            if (dots[currentSlide]) {
+                dots[currentSlide].className = 'w-2.5 h-2.5 rounded-full bg-yellow-400 scale-125 transition-all';
+            }
+        }
+
+        function startGallery() {
+            if (galleryInterval) clearInterval(galleryInterval);
+            showSlide(0);
+            galleryInterval = setInterval(() => {
+                showSlide(currentSlide + 1);
+            }, 4500);
+        }
+
+        // --- 11. SERVICE ROTATION & MODAL ---
+        const serviceBoxes = document.querySelectorAll('.service-box');
+        let currentServiceIdx = 0;
+        let serviceInterval = null;
+
+        function rotateService() {
+            serviceBoxes.forEach(b => b.classList.remove('auto-hover'));
+            if (serviceBoxes.length > 0) {
+                serviceBoxes[currentServiceIdx].classList.add('auto-hover');
+                currentServiceIdx = (currentServiceIdx + 1) % serviceBoxes.length;
+            }
+        }
+
+        function startServiceRotation() {
+            if (serviceInterval) clearInterval(serviceInterval);
+            serviceInterval = setInterval(rotateService, 2400);
+        }
+
         const servicesGrid = document.getElementById('services-grid');
-        if(servicesGrid) {
-            servicesGrid.addEventListener('mouseenter', stopServiceRotation);
+        if (servicesGrid) {
+            servicesGrid.addEventListener('mouseenter', () => {
+                if (serviceInterval) clearInterval(serviceInterval);
+                serviceBoxes.forEach(b => b.classList.remove('auto-hover'));
+            });
             servicesGrid.addEventListener('mouseleave', startServiceRotation);
         }
 
-        document.getElementById('access-now-btn').addEventListener('click', () => navigateTo('profile'));
-        document.getElementById('enter-portal-btn').addEventListener('click', () => navigateTo('company'));
-
-        // --- NEW GALLERY LOGIC (Left to Right Wipe) ---
-        let slideIndex = 0;
-        function startGallery() {
-            const slides = document.getElementsByClassName("gallery-slide");
-            if(slides.length === 0) return;
-            
-            for (let i = 0; i < slides.length; i++) {
-                slides[i].classList.remove('active-slide');
-            }
-            
-            slideIndex++;
-            if (slideIndex > slides.length) {slideIndex = 1}
-            slides[slideIndex-1].classList.add('active-slide');
-            setTimeout(startGallery, 4000); 
-        }
-
         const modal = document.getElementById('service-modal');
-        function openServiceModal(serviceName) {
-            document.getElementById('modal-service-title').innerText = serviceName;
-            modal.style.display = 'flex';
-            document.getElementById('contact-number-display').classList.add('hidden'); 
+        function openServiceModal(serviceTitle, serviceDesc = '') {
+            playSciFiSound('click');
+            document.getElementById('modal-service-title').textContent = serviceTitle;
+            document.getElementById('modal-service-desc').textContent = serviceDesc || 'Select an operational channel below for emergency or commercial deployment:';
+            document.getElementById('contact-number-display').classList.add('hidden');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
-        function closeServiceModal() { modal.style.display = 'none'; }
-        function revealNumber() { document.getElementById('contact-number-display').classList.remove('hidden'); }
-        window.onclick = function(event) { if (event.target == modal) closeServiceModal(); }
 
-        window.addEventListener('resize', () => {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            columns = width / fontSize;
-            drops = Array(Math.floor(columns)).fill(1);
+        function closeServiceModal() {
+            playSciFiSound('click');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function revealNumber() {
+            playSciFiSound('click');
+            document.getElementById('contact-number-display').classList.remove('hidden');
+        }
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) closeServiceModal();
         });
 
-        // --- SHARE MENU LOGIC ---
+        // --- 12. TOAST NOTIFICATION & CLIPBOARD ---
+        function showToast(msg) {
+            const toast = document.getElementById('cyber-toast');
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function copyHotline() {
+            playSciFiSound('click');
+            navigator.clipboard.writeText('0995-403-6719').then(() => {
+                showToast('Hotline 0995-403-6719 Copied to Clipboard!');
+            });
+        }
+
+        function copySiteLink(e) {
+            e.preventDefault();
+            playSciFiSound('click');
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                showToast('Barchem Portal Link Copied to Clipboard!');
+                shareToggleBtn.click();
+            });
+        }
+
+        // --- 13. SHARE MENU LOGIC ---
         const shareToggleBtn = document.getElementById('share-toggle-btn');
         const shareMenu = document.getElementById('share-menu');
         let shareMenuOpen = false;
 
-        shareToggleBtn.addEventListener('click', () => {
+        shareToggleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playSciFiSound('click');
             shareMenuOpen = !shareMenuOpen;
             if (shareMenuOpen) {
                 shareMenu.classList.remove('hidden');
@@ -1031,8 +1837,8 @@
             }
         });
 
-        document.addEventListener('click', (event) => {
-            if (shareMenuOpen && !shareToggleBtn.contains(event.target) && !shareMenu.contains(event.target)) {
+        document.addEventListener('click', (e) => {
+            if (shareMenuOpen && !shareToggleBtn.contains(e.target) && !shareMenu.contains(e.target)) {
                 shareToggleBtn.click();
             }
         });
@@ -1042,20 +1848,23 @@
 
         function shareFacebook(e) {
             e.preventDefault();
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${getSiteUrl()}`, 'facebook-share', 'width=580,height=296');
-            shareToggleBtn.click(); 
+            playSciFiSound('click');
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${getSiteUrl()}`, 'facebook-share', 'width=580,height=320');
+            shareToggleBtn.click();
         }
 
         function shareMessenger(e) {
             e.preventDefault();
+            playSciFiSound('click');
             window.open(`fb-messenger://share/?link=${getSiteUrl()}`, '_blank');
-            shareToggleBtn.click(); 
+            shareToggleBtn.click();
         }
 
         function shareEmail(e) {
             e.preventDefault();
-            window.location.href = `mailto:?subject=Check out ${getSiteTitle()}&body=I found this interesting, take a look: ${getSiteUrl()}`;
-            shareToggleBtn.click(); 
+            playSciFiSound('click');
+            window.location.href = `mailto:?subject=${getSiteTitle()}&body=Access Barchem Trading & Services Official Portal: ${getSiteUrl()}`;
+            shareToggleBtn.click();
         }
     </script>
 </body>
